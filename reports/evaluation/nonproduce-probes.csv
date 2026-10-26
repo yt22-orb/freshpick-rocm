@@ -1,0 +1,5 @@
+id,actual,predicted_produce,predicted_freshness,class_confidence,freshness_confidence,status,source_page
+banana_more_01,unsupported_nonproduce,cucumber,rotten,0.74007648229599,0.7615236651808764,ok,https://commons.wikimedia.org/wiki/File:2023-07-15-Marni-Banana.jpg
+banana_more_02,unsupported_nonproduce,cucumber,rotten,0.4159145951271057,0.5463381376173998,ok,https://commons.wikimedia.org/wiki/File:OMY_Banana_Oil_(51888502386).jpg
+banana_more_03,unsupported_nonproduce,papaya,rotten,0.779999315738678,0.8358406530945687,ok,"https://commons.wikimedia.org/wiki/File:Rua_de_Banana_1,_Cidade_Velha,_Cape_Verde.jpg"
+banana_more_05,unsupported_nonproduce,pineapple,fresh,0.5864399075508118,0.7457186649839803,ok,https://commons.wikimedia.org/wiki/File:Banana_Republic_Clothing_Store_-_Chevy_Chase_-_Maryland.jpg

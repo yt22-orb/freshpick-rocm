@@ -1,0 +1,9 @@
+{
+  "n": 24,
+  "warmup_requests": 3,
+  "scope": "Sequential localhost multipart HTTP, image decode, preprocessing, serialized GPU inference and JSON; no network WAN or camera startup",
+  "median_ms": 11.82420499935688,
+  "p95_ms": 18.82523990116169,
+  "min_ms": 6.939004000741988,
+  "max_ms": 21.550991001276998
+}

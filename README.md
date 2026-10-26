@@ -111,3 +111,19 @@ Open http://localhost:8000. To fine-tune your own checkpoint, use the command in
 [the fine-tuning report](reports/FINETUNING_RESULTS.md), adjusting `--init-checkpoint`
 and keeping a separate output directory. The original class order and split digest
 must match. A new optimizer is used; this is weight initialization, not exact optimizer-state resumption.
+
+
+## Generalization audit
+
+The [model evaluation report](reports/MODEL_EVALUATION.md) compares both checkpoints,
+all 24 classes, confidence calibration, image degradation, and internet probes.
+The fine-tuned FP32 audit scores 96.78% joint accuracy on the reused dataset test
+split, but only 10/24 correct produce identities on a small, manually reviewed
+internet convenience sample. Web freshness accuracy is unknown because those
+images lack verified stage labels. Similar train/test views, cultivar/background
+variation, blur sensitivity, and confident errors limit general-use claims.
+Prioritize an independent item/session-grouped camera benchmark and better
+training coverage before more tuning or wider deployment. The [PDF report](reports/MODEL_EVALUATION.pdf), [standalone HTML report](reports/MODEL_EVALUATION.html),
+and [next implementation plan](reports/IMPROVEMENT_PLAN.md) are included. This
+branch preserves the audited `be31339` code; newer main-branch optimization changes
+are separate and are not covered by these measurements.

@@ -1,0 +1,418 @@
+{
+  "inference": "FP32 on ROCm, identical to deployed Predictor; saved training metrics used AMP",
+  "split_sha256": "97a36346183f44b03205bd884896f7fd072635727d67eaac3c45fed3e81e30d8",
+  "web_freshness_ground_truth": "unavailable; no web freshness accuracy is computed",
+  "models": {
+    "original": {
+      "version": "mobilenetv3-small-7e1ee2803754f3ca",
+      "checkpoint_sha256": "7e1ee2803754f3ca324371b4be8911c2aa52e3b8ad2658006e6ec02229537746",
+      "n": 777,
+      "joint_correct": 745,
+      "joint_accuracy": 0.9588159588159588,
+      "joint_accuracy_wilson95": [
+        0.9424392126165861,
+        0.9706782863912724
+      ],
+      "macro": {
+        "precision": 0.96676188225779,
+        "recall": 0.9504110000814109,
+        "f1-score": 0.957233244352318,
+        "support": 777.0
+      },
+      "weighted": {
+        "precision": 0.9603924526814756,
+        "recall": 0.9588159588159588,
+        "f1-score": 0.9584139583972191,
+        "support": 777.0
+      },
+      "produce_accuracy_joint_winner": 0.9987129987129987,
+      "freshness_accuracy_joint_winner": 0.9601029601029601,
+      "freshness_macro": {
+        "precision": 0.9628781412421907,
+        "recall": 0.958385316203982,
+        "f1-score": 0.9600010488501214,
+        "support": 777.0
+      },
+      "joint_calibration": {
+        "ece_10_equal_width_bins": 0.019134420800853424,
+        "nll": 0.12057539075613022,
+        "multiclass_brier_sum": 0.0649463637461517,
+        "bins": [
+          {
+            "lower": 0.30000000000000004,
+            "upper": 0.4,
+            "count": 1,
+            "accuracy": 0.0,
+            "mean_confidence": 0.3823993504047394
+          },
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "count": 12,
+            "accuracy": 0.5,
+            "mean_confidence": 0.5432358384132385
+          },
+          {
+            "lower": 0.6000000000000001,
+            "upper": 0.7000000000000001,
+            "count": 13,
+            "accuracy": 0.6923076923076923,
+            "mean_confidence": 0.6536006331443787
+          },
+          {
+            "lower": 0.7000000000000001,
+            "upper": 0.8,
+            "count": 12,
+            "accuracy": 0.9166666666666666,
+            "mean_confidence": 0.7498902678489685
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "count": 36,
+            "accuracy": 0.75,
+            "mean_confidence": 0.8671171069145203
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "count": 703,
+            "accuracy": 0.984352773826458,
+            "mean_confidence": 0.9946593046188354
+          }
+        ]
+      },
+      "freshness_marginal_calibration": {
+        "ece_10_equal_width_bins": 0.019014834437130944,
+        "nll": 0.11703670024871826,
+        "multiclass_brier_sum": 0.06369258681773535,
+        "bins": [
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "count": 12,
+            "accuracy": 0.5,
+            "mean_confidence": 0.545067310333252
+          },
+          {
+            "lower": 0.6000000000000001,
+            "upper": 0.7000000000000001,
+            "count": 11,
+            "accuracy": 0.7272727272727273,
+            "mean_confidence": 0.6479745507240295
+          },
+          {
+            "lower": 0.7000000000000001,
+            "upper": 0.8,
+            "count": 14,
+            "accuracy": 0.8571428571428571,
+            "mean_confidence": 0.7471835017204285
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "count": 33,
+            "accuracy": 0.7272727272727273,
+            "mean_confidence": 0.8673226237297058
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "count": 707,
+            "accuracy": 0.9844413012729845,
+            "mean_confidence": 0.9946256875991821
+          }
+        ]
+      },
+      "marginal_freshness_argmax_disagrees_with_ui": 0,
+      "rotten_as_fresh": 1,
+      "rotten_as_semi_fresh": 6,
+      "confidence_slices_descriptive_not_validated_thresholds": [
+        {
+          "threshold": 0.5,
+          "n": 776,
+          "coverage": 0.9987129987129987,
+          "joint_accuracy": 0.9600515463917526
+        },
+        {
+          "threshold": 0.7,
+          "n": 751,
+          "coverage": 0.9665379665379665,
+          "joint_accuracy": 0.9720372836218375
+        },
+        {
+          "threshold": 0.8,
+          "n": 739,
+          "coverage": 0.9510939510939511,
+          "joint_accuracy": 0.972936400541272
+        },
+        {
+          "threshold": 0.9,
+          "n": 703,
+          "coverage": 0.9047619047619048,
+          "joint_accuracy": 0.984352773826458
+        },
+        {
+          "threshold": 0.95,
+          "n": 679,
+          "coverage": 0.8738738738738738,
+          "joint_accuracy": 0.9911634756995582
+        },
+        {
+          "threshold": 0.99,
+          "n": 620,
+          "coverage": 0.797940797940798,
+          "joint_accuracy": 0.9951612903225806
+        }
+      ],
+      "web": {
+        "n": 24,
+        "produce_correct": 10,
+        "produce_accuracy": 0.4166666666666667,
+        "freshness_accuracy": null,
+        "note": "Nonrandom convenience sample; unknown freshness labels; not a domain benchmark"
+      }
+    },
+    "finetuned": {
+      "version": "mobilenetv3-small-a9e3a06213d9c244",
+      "checkpoint_sha256": "a9e3a06213d9c2442700a88bf3f970ebd3ded9941e7b3ecb19355e2e99a5cf24",
+      "n": 777,
+      "joint_correct": 752,
+      "joint_accuracy": 0.9678249678249679,
+      "joint_accuracy_wilson95": [
+        0.9529340115871685,
+        0.9781128632777869
+      ],
+      "macro": {
+        "precision": 0.9724995015194319,
+        "recall": 0.9617690069453279,
+        "f1-score": 0.9657185606970614,
+        "support": 777.0
+      },
+      "weighted": {
+        "precision": 0.9694279085411925,
+        "recall": 0.9678249678249679,
+        "f1-score": 0.9675953800157239,
+        "support": 777.0
+      },
+      "produce_accuracy_joint_winner": 1.0,
+      "freshness_accuracy_joint_winner": 0.9678249678249679,
+      "freshness_macro": {
+        "precision": 0.9682819246420028,
+        "recall": 0.9672348321138319,
+        "f1-score": 0.9677164195128579,
+        "support": 777.0
+      },
+      "joint_calibration": {
+        "ece_10_equal_width_bins": 0.014890505386902439,
+        "nll": 0.09804510325193405,
+        "multiclass_brier_sum": 0.05110038907658808,
+        "bins": [
+          {
+            "lower": 0.4,
+            "upper": 0.5,
+            "count": 6,
+            "accuracy": 0.6666666666666666,
+            "mean_confidence": 0.4627798795700073
+          },
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "count": 8,
+            "accuracy": 0.5,
+            "mean_confidence": 0.546130359172821
+          },
+          {
+            "lower": 0.6000000000000001,
+            "upper": 0.7000000000000001,
+            "count": 8,
+            "accuracy": 0.625,
+            "mean_confidence": 0.6573492288589478
+          },
+          {
+            "lower": 0.7000000000000001,
+            "upper": 0.8,
+            "count": 17,
+            "accuracy": 0.8823529411764706,
+            "mean_confidence": 0.7513863444328308
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "count": 19,
+            "accuracy": 0.6842105263157895,
+            "mean_confidence": 0.8449016213417053
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "count": 719,
+            "accuracy": 0.9888734353268428,
+            "mean_confidence": 0.9950475692749023
+          }
+        ]
+      },
+      "freshness_marginal_calibration": {
+        "ece_10_equal_width_bins": 0.017336058417188886,
+        "nll": 0.09651975333690643,
+        "multiclass_brier_sum": 0.05080027596919001,
+        "bins": [
+          {
+            "lower": 0.4,
+            "upper": 0.5,
+            "count": 2,
+            "accuracy": 1.0,
+            "mean_confidence": 0.4882975220680237
+          },
+          {
+            "lower": 0.5,
+            "upper": 0.6,
+            "count": 11,
+            "accuracy": 0.36363636363636365,
+            "mean_confidence": 0.5362536311149597
+          },
+          {
+            "lower": 0.6000000000000001,
+            "upper": 0.7000000000000001,
+            "count": 8,
+            "accuracy": 0.625,
+            "mean_confidence": 0.6579416394233704
+          },
+          {
+            "lower": 0.7000000000000001,
+            "upper": 0.8,
+            "count": 18,
+            "accuracy": 0.8888888888888888,
+            "mean_confidence": 0.7529338598251343
+          },
+          {
+            "lower": 0.8,
+            "upper": 0.9,
+            "count": 18,
+            "accuracy": 0.6666666666666666,
+            "mean_confidence": 0.8481543660163879
+          },
+          {
+            "lower": 0.9,
+            "upper": 1.0,
+            "count": 720,
+            "accuracy": 0.9888888888888889,
+            "mean_confidence": 0.9952366948127747
+          }
+        ]
+      },
+      "marginal_freshness_argmax_disagrees_with_ui": 1,
+      "rotten_as_fresh": 2,
+      "rotten_as_semi_fresh": 5,
+      "confidence_slices_descriptive_not_validated_thresholds": [
+        {
+          "threshold": 0.5,
+          "n": 771,
+          "coverage": 0.9922779922779923,
+          "joint_accuracy": 0.9701686121919585
+        },
+        {
+          "threshold": 0.7,
+          "n": 755,
+          "coverage": 0.9716859716859717,
+          "joint_accuracy": 0.9788079470198675
+        },
+        {
+          "threshold": 0.8,
+          "n": 738,
+          "coverage": 0.9498069498069498,
+          "joint_accuracy": 0.981029810298103
+        },
+        {
+          "threshold": 0.9,
+          "n": 719,
+          "coverage": 0.9253539253539254,
+          "joint_accuracy": 0.9888734353268428
+        },
+        {
+          "threshold": 0.95,
+          "n": 697,
+          "coverage": 0.8970398970398971,
+          "joint_accuracy": 0.9913916786226685
+        },
+        {
+          "threshold": 0.99,
+          "n": 634,
+          "coverage": 0.8159588159588159,
+          "joint_accuracy": 0.9952681388012619
+        }
+      ],
+      "web": {
+        "n": 24,
+        "produce_correct": 10,
+        "produce_accuracy": 0.4166666666666667,
+        "freshness_accuracy": null,
+        "note": "Nonrandom convenience sample; unknown freshness labels; not a domain benchmark"
+      }
+    }
+  },
+  "robustness": [
+    {
+      "variant": "clean",
+      "n": 777,
+      "joint_accuracy": 0.9678249678249679,
+      "macro_f1": 0.9657185606970614
+    },
+    {
+      "variant": "dark_50pct",
+      "n": 777,
+      "joint_accuracy": 0.8597168597168597,
+      "macro_f1": 0.8346951507599711,
+      "banana": 0.84,
+      "bittermelon": 0.8974358974358975,
+      "cucumber": 0.8064516129032258,
+      "eggplant": 0.8125,
+      "orange": 0.9380530973451328,
+      "papaya": 0.8133333333333334,
+      "pineapple": 0.8795180722891566,
+      "tomato": 0.8588235294117647
+    },
+    {
+      "variant": "bright_150pct",
+      "n": 777,
+      "joint_accuracy": 0.6885456885456885,
+      "macro_f1": 0.5962160135639564,
+      "banana": 0.52,
+      "bittermelon": 0.717948717948718,
+      "cucumber": 0.41935483870967744,
+      "eggplant": 0.6458333333333334,
+      "orange": 0.7345132743362832,
+      "papaya": 0.76,
+      "pineapple": 0.7831325301204819,
+      "tomato": 0.788235294117647
+    },
+    {
+      "variant": "blur_radius_2",
+      "n": 777,
+      "joint_accuracy": 0.5971685971685972,
+      "macro_f1": 0.54309085791241,
+      "banana": 0.5,
+      "bittermelon": 0.5641025641025641,
+      "cucumber": 0.43548387096774194,
+      "eggplant": 0.6770833333333334,
+      "orange": 0.6371681415929203,
+      "papaya": 0.38666666666666666,
+      "pineapple": 0.6506024096385542,
+      "tomato": 0.7235294117647059
+    },
+    {
+      "variant": "jpeg_quality_30",
+      "n": 777,
+      "joint_accuracy": 0.8841698841698842,
+      "macro_f1": 0.8623379983428823,
+      "banana": 0.95,
+      "bittermelon": 0.8717948717948718,
+      "cucumber": 0.8225806451612904,
+      "eggplant": 0.875,
+      "orange": 0.8141592920353983,
+      "papaya": 0.9733333333333334,
+      "pineapple": 0.9156626506024096,
+      "tomato": 0.8705882352941177
+    }
+  ]
+}

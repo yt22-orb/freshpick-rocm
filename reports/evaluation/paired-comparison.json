@@ -1,0 +1,7 @@
+{
+  "original_wrong_finetuned_right": 19,
+  "original_right_finetuned_wrong": 12,
+  "both_wrong": 13,
+  "exact_mcnemar_p": 0.28104151505976915,
+  "note": "Exploratory paired test; correlated images violate independence; test set was reused."
+}

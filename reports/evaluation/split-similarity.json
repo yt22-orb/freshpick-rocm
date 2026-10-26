@@ -1,0 +1,8 @@
+{
+  "method": "64-bit horizontal dHash on prepared RGB image converted to grayscale, 9x8 resize",
+  "exact_source_pixel_hash_overlap": 0,
+  "test_n": 777,
+  "test_with_nearest_train_dhash_le_3": 33,
+  "test_with_nearest_train_dhash_le_5": 117,
+  "warning": "Visual-similarity screening only; hash collisions can be unrelated items and no verified item IDs exist."
+}

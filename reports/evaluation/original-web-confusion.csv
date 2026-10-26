@@ -1,0 +1,9 @@
+,banana,bittermelon,cucumber,eggplant,orange,papaya,pineapple,tomato
+banana,1,0,1,0,0,0,1,0
+bittermelon,0,1,0,1,0,0,1,0
+cucumber,0,1,0,0,0,0,2,0
+eggplant,0,0,0,1,0,0,2,0
+orange,0,0,0,0,3,0,0,0
+papaya,0,0,0,0,0,0,2,1
+pineapple,0,0,0,0,0,0,3,0
+tomato,0,0,0,0,0,0,2,1
