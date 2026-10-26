@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 from .predict import Predictor
 from .storage import StorageRequest, storage_guidance
+from .shelf_life import shelf_life_reference
 
 app = FastAPI(title="FreshPick inference", version="0.3.0")
 _predictor = None
@@ -52,6 +53,11 @@ def predict(file: UploadFile | None = File(None), image: UploadFile | None = Fil
 @app.post("/storage-guidance")
 def guidance(request: StorageRequest):
     return storage_guidance(request)
+
+
+@app.get("/shelf-life-reference")
+def reference_dataset():
+    return shelf_life_reference()
 
 
 # Register static routing last so API routes and /docs remain available.

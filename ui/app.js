@@ -460,6 +460,7 @@ function exportReport() {
     `Freshness: ${freshnessAvailable ? stageLabels[lastResult.freshness] : 'Unavailable; candidate is not a verified assessment for this produce'}`,
     ...(freshnessAvailable ? [`Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`] : []),
     ...(lastResult.storageGuidance ? ['Typical storage guidance: ' + lastResult.storageGuidance.window_label, ...(lastResult.storageGuidance.timing ? ['Storage timing: ' + lastResult.storageGuidance.timing.heading, lastResult.storageGuidance.timing.body, lastResult.storageGuidance.timing.caveat, 'Calculated snapshot: ' + lastResult.storageGuidance.timing.calculated_at] : []), ...lastResult.storageGuidance.suggestions, ...lastResult.storageGuidance.assumptions, lastResult.storageGuidance.disclaimer, ...lastResult.storageGuidance.sources.map((source) => source.title + ': ' + source.url + ' (reviewed ' + source.reviewed_on + ')')] : ['Storage guidance: Not requested']),
+    ...(lastResult.storageGuidance?.reference ? ['Storage reference dataset: ' + lastResult.storageGuidance.dataset_version, 'Reference record: ' + lastResult.storageGuidance.reference.id, 'Reference conditions: ' + lastResult.storageGuidance.reference.source_temperature] : []),
     ...(lastResult.selectedPhotoDetails ? [`Photo/detail source: ${lastResult.photoDetailsEdited ? 'edited by user' : 'model suggestion'}`, `Whole/cut detail: ${lastResult.selectedPhotoDetails.condition}`, `Ripeness appearance: ${lastResult.selectedPhotoDetails.ripeness}`] : []),
     `Model version: ${lastResult.modelVersion}`,
     `Identifier version: ${lastResult.identifierVersion || '24-class baseline'}`,
@@ -666,7 +667,8 @@ document.querySelector('#storage-form').addEventListener('submit', async (event)
     const advice = await response.json();
     if (controller.signal.aborted || result !== lastResult) return;
     result.confirmedProduce = produce; result.storageGuidance = advice;
-    target.innerHTML = `${renderStorageTiming(advice)}<strong>${escapeHtml(advice.window_label)}</strong><ul>${[...advice.suggestions.filter((text) => text !== advice.timing?.body),...advice.assumptions].map((text) => `<li>${escapeHtml(text)}</li>`).join('')}</ul><p class="helper">${escapeHtml(advice.disclaimer)}</p><p>Sources: ${advice.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)}</a> (reviewed ${escapeHtml(source.reviewed_on)})`).join('; ')}</p>`;
+    const referenceNote = advice.reference ? `<p class="helper">Source conditions: ${escapeHtml(advice.reference.source_temperature)}</p>` : '';
+    target.innerHTML = `${renderStorageTiming(advice)}<strong>${escapeHtml(advice.window_label)}</strong>${referenceNote}<ul>${[...advice.suggestions.filter((text) => text !== advice.timing?.body),...advice.assumptions].map((text) => `<li>${escapeHtml(text)}</li>`).join('')}</ul><p class="helper">${escapeHtml(advice.disclaimer)}</p><p>Sources: ${advice.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)}</a> (reviewed ${escapeHtml(source.reviewed_on)})`).join('; ')}</p>`;
     saveHistory(result); renderReport(result);
   } catch (error) {
     if (error.name !== 'AbortError' && result === lastResult) target.textContent = error.message;

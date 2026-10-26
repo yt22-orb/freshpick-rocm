@@ -106,3 +106,67 @@ def test_cut_counter_exposure_never_returns_safe_remaining_time(days,action):
 def test_photo_inference_is_an_explicit_timing_assumption():
     advice=storage_guidance(StorageRequest(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',days_stored=1,observation_source='photo_model'))
     assert advice['timing']['details_are_photo_suggestions'] is True
+
+
+@pytest.mark.parametrize('produce', ['banana','bittermelon','cucumber','eggplant','orange','papaya','pineapple','tomato'])
+@pytest.mark.parametrize('location', ['counter', 'refrigerator'])
+def test_no_signs_observed_still_enforces_every_whole_produce_location_limit(produce, location):
+    from freshpick.shelf_life import storage_reference
+    row = storage_reference(produce, 'whole', location)
+    data = StorageRequest(produce=produce, confirmed=True, condition='whole', ripeness='ripe',
+                          location=location, spoilage='no', days_stored=row['max_days'])
+    advice = storage_guidance(data)
+    assert advice['status'] == 'discard_recommended'
+    assert advice['timing']['state'] == 'at_limit'
+    assert advice['timing']['action'] == 'discard'
+    assert advice['timing']['reference_days_left'] == {'min': 0.0, 'max': 0.0}
+    assert 'even when no spoilage signs' in advice['timing']['body']
+    assert advice['reference']['id'] == row['id']
+    assert advice['dataset_version'] == '2026-10-26.1'
+
+
+@pytest.mark.parametrize('location,window,remaining', [
+    ('counter', {'min':3, 'max':7}, {'min':1.0, 'max':5.0}),
+    ('refrigerator', {'min':3, 'max':3}, {'min':1.0, 'max':1.0}),
+])
+def test_purchase_age_uses_location_specific_banana_reference(location, window, remaining):
+    advice = storage_guidance(StorageRequest(produce='banana', confirmed=True, condition='whole',
+        ripeness='ripe', location=location, spoilage='no', days_stored=2))
+    assert advice['typical_window_days'] == window
+    assert advice['timing']['reference_days_left'] == remaining
+    assert any('No signs observed does not reset' in item for item in advice['suggestions'])
+
+
+def test_storage_reference_is_available_without_inference_weights():
+    reference = TestClient(app).get('/shelf-life-reference')
+    assert reference.status_code == 200
+    data = reference.json()
+    assert len(data['records']) == 32
+    assert len({row['id'] for row in data['records']}) == 32
+    for row in data['records']:
+        assert row['source_ids'] and row['source_locator'] and row['age_basis']
+        assert all(key in data['sources'] for key in row['source_ids'])
+        if row['condition'] == 'cut' and row['location'] == 'counter':
+            assert row['min_days'] is None and row['max_days'] is None
+        else:
+            assert 0 < row['min_days'] <= row['max_days']
+
+
+def test_dataset_csv_and_research_snapshot_provenance():
+    import csv
+    import hashlib
+    import json
+    from pathlib import Path
+    from freshpick.shelf_life import shelf_life_reference
+    root = Path(__file__).resolve().parents[1] / 'datasets' / 'shelf_life'
+    rows = list(csv.DictReader((root / 'produce_storage.csv').open()))
+    assert {row['id'] for row in rows} == {row['id'] for row in shelf_life_reference()['records']}
+    expected = {row['id']: row for row in shelf_life_reference()['records']}
+    for row in rows:
+        for field in ['min_days', 'max_days']:
+            assert (float(row[field]) if row[field] else None) == expected[row['id']][field]
+    manifest = json.loads((root / 'foodkeeper_mirror_manifest.json').read_text())
+    snapshot = (root / 'foodkeeper_mirror_snapshot.json').read_bytes()
+    assert hashlib.sha256(snapshot).hexdigest() == manifest['sha256']
+    assert len(json.loads(snapshot)['product_data']) == manifest['product_records'] == 661
+    assert 'current upstream content not verified' in manifest['upstream_download_status']

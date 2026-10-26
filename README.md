@@ -10,6 +10,11 @@ The supplied UI kit now provides the branding, artwork, icons and styling. See
 [UI kit integration](reports/UI_KIT_REFRESH.md) for the updated Home, Scan and
 Insights views and verification results.
 
+The [shelf-life reference dataset](datasets/shelf_life/README.md) now covers both
+room and refrigerated storage for all eight produce types, with 32 source-reviewed
+whole/cut records and downloadable CSV/JSON. Reported purchase age still applies
+when no spoilage signs are observed. See [dataset integration](reports/SHELF_LIFE_DATASET.md).
+
 ## Dataset
 
 - **Source:** [AgriFreshNET Freshness and Shelf-Life Image Dataset, version 1](https://data.mendeley.com/datasets/42m5tb7yv9/1), DOI [10.17632/42m5tb7yv9.1](https://doi.org/10.17632/42m5tb7yv9.1), by Fouzia Risdin, Hafsha Salauddin, Tasniya aziza tufa, and Md Jakir Hossain. License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

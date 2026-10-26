@@ -1,0 +1,17 @@
+{
+  "retrieved_on": "2026-10-26",
+  "upstream_catalog": "https://catalog.data.gov/dataset/fsis-foodkeeper-data",
+  "upstream_urls": [
+    "https://www.fsis.usda.gov/shared/data/EN/foodkeeper.json",
+    "https://www.foodsafety.gov/foodkeeper/foodkeeper_data_url_en.json"
+  ],
+  "upstream_download_status": "HTTP 403 from this environment; current upstream content not verified",
+  "retrieved_from": "https://raw.githubusercontent.com/haggman/A4I2026-challenge-2-food-equity/4b46776c4bee7ca36ecfffce3b6a6b22c68695c4/data/foodkeeper.json",
+  "mirror_commit": "4b46776c4bee7ca36ecfffce3b6a6b22c68695c4",
+  "sha256": "e84caab9d4b603209e31d21d5027c41d29adfecbca7051ff7322e9fb0226c01d",
+  "bytes": 583163,
+  "product_records": 661,
+  "format": "Third-party transformed FoodKeeper snapshot with display fields; not a verified current upstream raw export",
+  "usage": "Archived research input; runtime uses the curated source-reviewed reference, not this mirror.",
+  "underlying_usda_license": "CC0 per Data.gov metadata"
+}

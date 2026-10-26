@@ -145,12 +145,13 @@
               </details>
             </section>
             <label for="storage-location">Where is it stored?</label><select id="storage-location" required><option value="">Choose storage</option><option value="counter">Counter / room temperature</option><option value="refrigerator">Refrigerator</option></select>
-            <label for="storage-spoilage">Any unusual odor, leakage or major softening?</label><select id="storage-spoilage" required><option value="">Check the item first</option><option value="no">No signs observed</option><option value="yes">Yes</option><option value="unknown">Not sure</option></select>
+            <label for="storage-spoilage">Any unusual odor, leakage or major softening?</label><select id="storage-spoilage" aria-describedby="storage-clock-note" required><option value="">Check the item first</option><option value="no">No signs observed</option><option value="yes">Yes</option><option value="unknown">Not sure</option></select>
+            <p class="helper" id="storage-clock-note">No signs observed does not reset the clock. Days since purchase and storage location still determine the reference time left.</p>
             <label for="days-stored" id="days-stored-label">Days already stored (optional)</label><input id="days-stored" type="number" min="0" max="365" step="any" aria-describedby="storage-age-basis"><p class="helper" id="storage-age-basis">Count elapsed storage time, not days remaining. Fractions of a day are allowed.</p>
             <button class="save-button" type="submit">Get storage guidance</button>
           </form>
           <div id="storage-result" aria-live="polite"><p>Complete the details above to see sourced storage guidance.</p></div>
-          <p class="helper">Time left is an estimate within a typical reference window, not a safety guarantee. At its maximum, the app recommends discarding as a conservative storage policy.</p>
+          <p class="helper">Room-temperature references assume a cool indoor spot; heat can shorten the window. Refrigerated references assume a working refrigerator at or below 4°C. Time left is a reference estimate, not a safety guarantee. At its maximum, the app recommends discarding conservatively even without visible spoilage.</p>
         </section>
         <div class="report-card guidance-card">
           <strong>Visible condition</strong>

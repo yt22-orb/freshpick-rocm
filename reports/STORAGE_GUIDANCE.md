@@ -18,16 +18,18 @@ it does not restart at the scan date. The timing extension compares reported
 elapsed days with that reference; it is not an item-specific expiry prediction.
 The endpoint is deterministic and does not require inference weights.
 
-Rules and their reviewed primary sources are in `src/freshpick/storage.py`.
+Rules read the packaged `src/freshpick/shelf_life_reference.json` dataset.
 [The implementation report](IMPLEMENTED_IMPROVEMENTS.md) lists the numeric rules
 and source URLs. Guidance review date: 2026-10-26. Required conditions differ
-by produce; no numeric rule is invented for unsupported combinations. Whole ripe
-tomatoes have qualitative guidance, because the chosen source says a few days.
+by produce; no numeric rule is invented for unsupported combinations. The
+[reviewed dataset](../datasets/shelf_life/README.md) includes both storage locations
+for all eight whole produce types, including a 2–3-day ripe-tomato fridge window.
 
 Confirmed produce is required. Observed or uncertain spoilage blocks numerical
 windows and prompts inspection/disposal guidance. Cut produce on a counter prompts
-refrigeration/disposal handling rather than a day count. Unripe or uncertain whole
-banana/papaya/tomato ripeness does not produce a fixed day range. Elapsed days are now subtracted from both endpoints of a matching reference
+refrigeration/disposal handling rather than a day count. References marked ripe-only
+need a matching maturity detail. General whole-produce counter windows are not
+predictions of ripening time. Elapsed days are subtracted from both endpoints of a matching reference
 range for a planning estimate. At its upper endpoint the app recommends discarding
 as an explicitly conservative policy; this is not a diagnosis of spoilage.
 

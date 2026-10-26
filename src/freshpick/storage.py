@@ -3,29 +3,12 @@ from typing import Literal
 from decimal import Decimal
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
+from .shelf_life import shelf_life_reference, storage_reference
 
 PRODUCE = ['banana','bittermelon','cucumber','eggplant','orange','papaya','pineapple','tomato']
-REVIEWED = '2026-10-26'
-SOURCES = {
-    'fda': {'title':'FDA — Tips to Reduce Food Waste', 'url':'https://www.fda.gov/food/consumers/tips-reduce-food-waste'},
-    'vce': {'title':'Virginia Cooperative Extension — Food Storage Guidelines for Consumers', 'url':'https://www.pubs.ext.vt.edu/348/348-960/348-960.html'},
-    'clemson': {'title':'Clemson Extension — Selecting & Storing Fruits & Vegetables', 'url':'https://hgic.clemson.edu/factsheet/selecting-storing-fruits-vegetables/'},
-    'cpma': {'title':'Canadian Produce Marketing Association — Bitter Melon', 'url':'https://www.halfyourplate.ca/produce/veggies/bitter-melon/'},
-    'maine': {'title':'University of Maine Extension — Storing and Washing Fresh Fruits and Vegetables', 'url':'https://extension.umaine.edu/food-health/2025/05/29/storing-and-washing-fresh-fruits-and-vegetables/'},
-    'canada': {'title':'Health Canada — Food safety tips for tomatoes', 'url':'https://www.canada.ca/en/health-canada/services/food-safety-fruits-vegetables/tomatoes.html'},
-    'psu': {'title':'Penn State Extension — Proper Care and Handling of Fruits and Vegetables', 'url':'https://extension.psu.edu/proper-care-and-handling-of-fruits-and-vegetables'},
-    'maryland': {'title':'University of Maryland Extension — Storing Garden Fruits and Vegetables', 'url':'https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables'},
-}
-# Household quality/storage windows from the linked sources, not publisher day labels.
-WHOLE_REFRIGERATED = {
-    'banana': (3,3,'vce','Ripen on the counter first; chill ripe bananas if needed.'),
-    'bittermelon': (3,5,'cpma','Keep whole in a loose bag; cut shortly before preparation.'),
-    'cucumber': (4,6,'vce','Keep refrigerated and inspect for soft or damaged areas before preparation.'),
-    'eggplant': (4,7,'vce','Use promptly; avoid bruising and check its condition before preparation.'),
-    'orange': (10,21,'vce','Keep whole citrus in the refrigerator for this general storage window.'),
-    'papaya': (1,2,'clemson','Use the short refrigerated window after the fruit is ripe.'),
-    'pineapple': (5,7,'vce','Use this whole-fruit refrigerator range as general guidance, not a ripening countdown.'),
-}
+REFERENCE = shelf_life_reference()
+REVIEWED = REFERENCE['reviewed_on']
+SOURCES = REFERENCE['sources']
 
 class StorageRequest(BaseModel):
     produce: Literal['banana','bittermelon','cucumber','eggplant','orange','papaya','pineapple','tomato']
@@ -41,6 +24,11 @@ class StorageRequest(BaseModel):
 def _days(value):
     number = format(value.normalize(), 'f')
     return f"{number} day" + ("" if value == 1 else "s")
+
+
+def _window_days(low, high):
+    low, high = Decimal(str(low)), Decimal(str(high))
+    return _days(low) if low == high else f"{format(low.normalize(), 'f')}–{_days(high)}"
 
 
 def storage_timing(request: StorageRequest, result):
@@ -96,7 +84,7 @@ def storage_timing(request: StorageRequest, result):
         at_limit=elapsed == high
         timing.update(state='at_limit' if at_limit else 'past_limit',action='discard',
                       heading='Storage limit reached — discard conservatively' if at_limit else 'Past the storage limit — discard conservatively',
-                      body=f"You report {_days(elapsed)} stored against a maximum {_days(high)} reference. The app recommends discarding at this cutoff as a conservative storage policy; time alone does not prove spoilage.")
+                      body=f"You report {_days(elapsed)} stored against a maximum {_days(high)} reference. The app recommends discarding at this cutoff even when no spoilage signs are observed, as a conservative storage policy; time alone does not prove spoilage.")
     elif left_low == 0 or left_high <= 1:
         timing.update(state='near_limit',action='use_promptly',heading='Near the typical storage limit',
                       body=f"Up to {_days(left_high)} remain in the reference window. Use promptly only if condition and handling are appropriate; the app recommends discarding once its reference maximum is reached.")
@@ -112,7 +100,7 @@ def storage_guidance(request: StorageRequest):
               'window_label':'No numerical window for these conditions', 'title':'Typical storage guidance',
               'assumptions':[], 'suggestions':[], 'reviewed_on':REVIEWED,
               'disclaimer':'General household guidance, not a prediction of this item’s remaining shelf life or a food-safety assessment.',
-              'sources':[], 'inputs':request.model_dump()}
+              'sources':[], 'inputs':request.model_dump(), 'dataset_version':REFERENCE['dataset_version'], 'reference':None}
     ids=[]
     def source(key):
         if key not in ids: ids.append(key)
@@ -125,43 +113,50 @@ def storage_guidance(request: StorageRequest):
     elif request.condition == 'unknown':
         result['suggestions']=['The photo does not clearly show whether this item is whole or cut/peeled. Use the optional details editor if you know; no numerical window is given for an unclear condition.']
     elif request.condition == 'cut':
-        source('maine'); source('psu')
+        reference = storage_reference(request.produce, request.condition, request.location)
+        result['reference'] = dict(reference, dataset_version=REFERENCE['dataset_version'])
+        for key in reference['source_ids']: source(key)
         if request.location == 'counter': source('fda')
         if request.location == 'counter':
             result['status']='action_required'
             result['suggestions']=['Move cut or peeled produce into a clean covered container in the refrigerator promptly, within two hours of cutting. If it has been left out longer than two hours, discard it.']
             source('canada' if request.produce == 'tomato' else 'maine')
         else:
-            days=(3,3) if request.produce=='tomato' else (3,4)
+            days=(reference['min_days'], reference['max_days'])
             result['typical_window_days']={'min':days[0],'max':days[1]}
-            result['window_label']='3 days after cutting' if days[0]==days[1] else '3–4 days after cutting'
+            result['window_label']=f'{_window_days(*days)} after cutting'
             result['status']='guidance'
             result['assumptions']=['Refrigerator at or below 4°C / 40°F.', 'Prompt chilling within two hours of cutting; no spoilage signs.', 'Window starts at cutting, not at scanning.']
             result['suggestions']=['Use a clean covered container and keep it separate from raw meat, poultry, and fish. Follow an earlier package use-by date if applicable.']
             if request.produce=='tomato': source('canada')
-    elif request.produce in ['banana','papaya','tomato'] and request.ripeness != 'ripe':
-        result['suggestions']=['Check ripeness yourself. For whole unripe fruit, allow ripening at room temperature away from direct sun; then reassess storage. No fixed ripening time is estimated.']
-        source('canada' if request.produce=='tomato' else 'clemson')
-    elif request.location == 'counter':
-        source('vce')
-        if request.produce=='orange':
-            result['typical_window_days']={'min':10,'max':10};result['window_label']='About 10 days at room temperature';result['status']='guidance'
-            result['assumptions']=['Whole citrus initially in good condition; ordinary indoor room temperature, not a hot outdoor setting.']
-            result['suggestions']=['Inspect regularly; use refrigerated guidance instead for longer storage.']
-        else:
-            result['status']='action_required'
-            result['suggestions']=['Consider refrigerator storage and use the matching guidance there. No sourced counter-storage duration is supplied for this combination.']
-    elif request.produce=='tomato':
-        source('canada');result['status']='guidance';result['window_label']='Use within a few days once ripe and refrigerated'
-        result['suggestions']=['Refrigerate ripe whole tomatoes; keep them away from raw meat, poultry, and seafood. The source gives no precise day range for this whole-fruit condition.']
     else:
-        low,high,key,action=WHOLE_REFRIGERATED[request.produce];source(key)
-        result['status']='guidance';result['typical_window_days']={'min':low,'max':high}
-        result['window_label']=f'{low} days in the refrigerator' if low==high else f'{low}–{high} days in the refrigerator'
-        result['assumptions']=['Whole produce initially in good condition.', 'Household refrigerator around 1–4°C / 33–40°F; check condition regularly.', 'Unknown purchase age, cultivar and prior handling can shorten this typical window.']
-        result['suggestions']=[action]
+        reference = storage_reference(request.produce, request.condition, request.location)
+        if reference is None:
+            result['suggestions']=['No reviewed storage reference matches these details.']
+        else:
+            result['reference'] = dict(reference, dataset_version=REFERENCE['dataset_version'])
+            for key in reference['source_ids']: source(key)
+            if reference['required_ripeness'] == 'ripe' and request.ripeness != 'ripe':
+                result['suggestions']=['This storage window applies only to ripe whole fruit. Confirm or adjust the ripeness detail first; allow unripe fruit to ripen at room temperature and check daily. No fixed ripening time is predicted.']
+            else:
+                low, high = reference['min_days'], reference['max_days']
+                result['status']='guidance'
+                result['typical_window_days']={'min':low,'max':high}
+                duration=_window_days(low, high)
+                location='in the refrigerator' if request.location=='refrigerator' else 'at room temperature'
+                result['window_label']=f'{duration} {location}'
+                result['assumptions']=[
+                    'Whole produce initially in good condition; unknown prior handling can shorten this window.',
+                    REFERENCE['temperature_policy'][request.location],
+                    'Compare all reported days since purchase or harvest under these conditions; a new scan or storage-location change does not reset age.',
+                ]
+                if reference['required_ripeness']=='ripe':
+                    result['assumptions'].append('This range assumes ripe fruit. Subtracting the full purchase age is a conservative comparison, not a measurement of time since ripening.')
+                result['suggestions']=list(reference['notes'])
     if request.observation_source == 'photo_model':
         result['assumptions'].insert(0, 'Photo-based details are suggestions, not confirmed maturity or condition. Any general storage window is conditional on those suggestions being correct; edit them if needed.')
+    if request.spoilage == 'no':
+        result['suggestions'].append('No signs observed does not reset the storage clock. The location-specific reference limit still applies to the reported age.')
     if request.days_stored is not None:
         result['suggestions'].append(f'You report {request.days_stored:g} days already stored. The reference window does not restart today; its remaining interval is a planning comparison, not predicted shelf life.')
     result['timing'] = storage_timing(request, result)

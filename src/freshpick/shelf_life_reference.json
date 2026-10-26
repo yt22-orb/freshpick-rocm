@@ -1,0 +1,703 @@
+{
+  "schema_version": 1,
+  "dataset_version": "2026-10-26.1",
+  "reviewed_on": "2026-10-26",
+  "purpose": "Sourced household quality/storage references, not measured item-level expiry or model training labels.",
+  "temperature_policy": {
+    "counter": "Cool indoor conditions, generally around 20–21°C; follow the individual source conditions. Hot rooms can shorten quality windows.",
+    "refrigerator": "Household refrigerator at or below 4°C; cold-sensitive produce can lose quality."
+  },
+  "age_policy": "Subtract all reported elapsed days from the matching reference; changing storage location or recording no spoilage does not reset age. A ripeness-specific range is conditional on that maturity; using full purchase age is a conservative comparison.",
+  "sources": {
+    "fda": {
+      "title": "FDA — Tips to Reduce Food Waste",
+      "url": "https://www.fda.gov/food/consumers/tips-reduce-food-waste"
+    },
+    "vce": {
+      "title": "Virginia Cooperative Extension — Food Storage Guidelines for Consumers",
+      "url": "https://www.pubs.ext.vt.edu/348/348-960/348-960.html"
+    },
+    "clemson": {
+      "title": "Clemson Extension — Selecting & Storing Fruits & Vegetables",
+      "url": "https://hgic.clemson.edu/factsheet/selecting-storing-fruits-vegetables/"
+    },
+    "cpma": {
+      "title": "Canadian Produce Marketing Association — Bitter Melon",
+      "url": "https://www.halfyourplate.ca/produce/veggies/bitter-melon/"
+    },
+    "maine": {
+      "title": "University of Maine Extension — Storing and Washing Fresh Fruits and Vegetables",
+      "url": "https://extension.umaine.edu/food-health/2025/05/29/storing-and-washing-fresh-fruits-and-vegetables/"
+    },
+    "canada": {
+      "title": "Health Canada — Food safety tips for tomatoes",
+      "url": "https://www.canada.ca/en/health-canada/services/food-safety-fruits-vegetables/tomatoes.html"
+    },
+    "psu": {
+      "title": "Penn State Extension — Proper Care and Handling of Fruits and Vegetables",
+      "url": "https://extension.psu.edu/proper-care-and-handling-of-fruits-and-vegetables"
+    },
+    "maryland": {
+      "title": "University of Maryland Extension — Storing Garden Fruits and Vegetables",
+      "url": "https://www.extension.umd.edu/resource/storing-garden-fruits-and-vegetables"
+    },
+    "voeding_banana": {
+      "title": "Netherlands Nutrition Centre — Banana storage",
+      "url": "https://www.voedingscentrum.nl/nl/thema/kopen-koken-bewaren/eten-bewaren/hoe-lang-kan-ik-bewaren/banaan.aspx"
+    },
+    "voeding_cucumber": {
+      "title": "Netherlands Nutrition Centre — Whole cucumber storage",
+      "url": "https://www.voedingscentrum.nl/nl/thema/kopen-koken-bewaren/eten-bewaren/hoe-lang-kan-ik-bewaren/komkommer-met-schil.aspx"
+    },
+    "eufic_banana": {
+      "title": "EUFIC — Storing bananas",
+      "url": "https://www.eufic.org/en/food-safety/article/how-to-store-bananas-properly-so-they-ripen-more-slowly-and-last-longer"
+    },
+    "gmc_bitter": {
+      "title": "Guyana New GMC — Bitter Melon postharvest information",
+      "url": "https://newgmc.com/gmc_docs/brochures/Bitter_Melon.pdf"
+    },
+    "psu_counter": {
+      "title": "Penn State Extension — Farmers Market Storage Postcard",
+      "url": "https://extension.psu.edu/farmers-market-storage-postcard"
+    },
+    "uf_papaya": {
+      "title": "University of Florida IFAS — Papaya Growing in the Florida Home Landscape",
+      "url": "https://ask.ifas.ufl.edu/publication/MG054"
+    },
+    "osu_pineapple": {
+      "title": "Oregon State University Extension — Pineapple",
+      "url": "https://extension.oregonstate.edu/newsletter/food-hero-monthly/pineapple-pineapple"
+    },
+    "uc_tomato": {
+      "title": "University of California ANR — Tomatoes: Safe Methods to Store, Preserve, and Enjoy",
+      "url": "https://ucanr.edu/sites/default/files/2018-09/290542.pdf"
+    },
+    "msu_tomato": {
+      "title": "Michigan State University Extension — Using, Storing and Preserving Tomatoes",
+      "url": "https://www.canr.msu.edu/mi_fresh/uploads/files/2023%20Tomatoes_AA.pdf"
+    },
+    "foodkeeper_catalog": {
+      "title": "USDA FSIS — FoodKeeper open-data catalog (CC0)",
+      "url": "https://catalog.data.gov/dataset/fsis-foodkeeper-data"
+    }
+  },
+  "records": [
+    {
+      "id": "banana-whole-counter",
+      "produce": "banana",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 7,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "voeding_banana"
+      ],
+      "source_locator": "Storage advice: fruit bowl",
+      "source_temperature": "Household fruit bowl; EUFIC specifies around 20°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep away from direct sunlight and heat. This is a general whole-banana range; already overripe fruit may have less time."
+      ]
+    },
+    {
+      "id": "banana-whole-refrigerator",
+      "produce": "banana",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "ripe",
+      "min_days": 3,
+      "max_days": 3,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 6: Bananas; refrigerator",
+      "source_temperature": "33–40°F in source; app assumes refrigerator at or below 4°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Ripen on the counter first; chill ripe bananas if needed."
+      ]
+    },
+    {
+      "id": "bittermelon-whole-counter",
+      "produce": "bittermelon",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "gmc_bitter"
+      ],
+      "source_locator": "Temperature Management, page 1: ambient deterioration after 3–4 days",
+      "source_temperature": "Ambient temperature; exact temperature not specified",
+      "evidence_type": "postharvest_ambient_observation",
+      "notes": [
+        "Use promptly. This ambient range describes onset of quality deterioration after harvest, not a measured safety cutoff. Earlier handling can shorten it."
+      ]
+    },
+    {
+      "id": "bittermelon-whole-refrigerator",
+      "produce": "bittermelon",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 5,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "cpma"
+      ],
+      "source_locator": "To Store",
+      "source_temperature": "Household refrigerator; source gives no exact temperature",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep whole in a loose bag and cut shortly before preparation. Bitter melon is chilling-sensitive; do not substitute commercial 10°C storage times for a household fridge."
+      ]
+    },
+    {
+      "id": "cucumber-whole-counter",
+      "produce": "cucumber",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 7,
+      "max_days": 7,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "voeding_cucumber"
+      ],
+      "source_locator": "Storage advice: cucumber with skin, fruit bowl",
+      "source_temperature": "Household fruit bowl; not a hot outdoor setting",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep whole with its original shrink-wrap if supplied, in a cool indoor spot. Cut cucumber must be refrigerated. Heat and drying can shorten this window."
+      ]
+    },
+    {
+      "id": "cucumber-whole-refrigerator",
+      "produce": "cucumber",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 4,
+      "max_days": 6,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 5: Cucumbers; refrigerator",
+      "source_temperature": "33–40°F in source; app assumes refrigerator at or below 4°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep refrigerated and inspect for soft or damaged areas. Cucumbers are chilling-sensitive; refrigeration need not improve flavor or exceed the counter window."
+      ]
+    },
+    {
+      "id": "eggplant-whole-counter",
+      "produce": "eggplant",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 1,
+      "max_days": 1,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 5: Eggplant; pantry",
+      "source_temperature": "Room temperature; exact temperature not specified",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Use promptly and avoid bruising. Keep away from direct sun and hot appliances."
+      ]
+    },
+    {
+      "id": "eggplant-whole-refrigerator",
+      "produce": "eggplant",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 4,
+      "max_days": 7,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 5: Eggplant; refrigerator",
+      "source_temperature": "33–40°F in source; app assumes refrigerator at or below 4°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Use promptly; avoid bruising and check its condition before preparation. Cold can affect quality."
+      ]
+    },
+    {
+      "id": "orange-whole-counter",
+      "produce": "orange",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 10,
+      "max_days": 10,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 6: Citrus fruit; pantry",
+      "source_temperature": "Room temperature; exact temperature not specified",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep whole citrus in a cool indoor spot and inspect regularly."
+      ]
+    },
+    {
+      "id": "orange-whole-refrigerator",
+      "produce": "orange",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 10,
+      "max_days": 21,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 6: Citrus fruit; refrigerator",
+      "source_temperature": "33–40°F in source; app assumes refrigerator at or below 4°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep whole citrus in the refrigerator for this general quality window."
+      ]
+    },
+    {
+      "id": "papaya-whole-counter",
+      "produce": "papaya",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 5,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "psu_counter"
+      ],
+      "source_locator": "Store at room temperature (70°F/21°C): Papaya, mangos",
+      "source_temperature": "70°F / 21°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Keep whole in a cool indoor spot and check ripeness daily. This is not a prediction of when a green papaya will ripen."
+      ]
+    },
+    {
+      "id": "papaya-whole-refrigerator",
+      "produce": "papaya",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "ripe",
+      "min_days": 4,
+      "max_days": 7,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "uf_papaya"
+      ],
+      "source_locator": "Harvest, Ripening, and Storage",
+      "source_temperature": "Refrigerator after ripening; exact temperature not specified",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Ripen before refrigeration; use promptly once ripe. The source gives a 4–7 day ripe-fruit keeping window."
+      ]
+    },
+    {
+      "id": "pineapple-whole-counter",
+      "produce": "pineapple",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": 2,
+      "max_days": 3,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "osu_pineapple"
+      ],
+      "source_locator": "Store Well Waste Less: whole pineapple",
+      "source_temperature": "Room temperature; exact temperature not specified",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Store whole away from heat and sunlight. Cut pineapple belongs in the refrigerator."
+      ]
+    },
+    {
+      "id": "pineapple-whole-refrigerator",
+      "produce": "pineapple",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 5,
+      "max_days": 7,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "vce"
+      ],
+      "source_locator": "Table 6: Pineapple; refrigerator",
+      "source_temperature": "33–40°F in source; app assumes refrigerator at or below 4°C",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Use this whole-fruit refrigerator range as general guidance, not a ripening countdown."
+      ]
+    },
+    {
+      "id": "tomato-whole-counter",
+      "produce": "tomato",
+      "condition": "whole",
+      "location": "counter",
+      "required_ripeness": "ripe",
+      "min_days": 2,
+      "max_days": 3,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "uc_tomato"
+      ],
+      "source_locator": "Storing Fresh Tomatoes, page 2: ripe retail tomatoes",
+      "source_temperature": "Room temperature, away from sunlight",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Store ripe tomatoes away from direct sunlight and use promptly. Unripe tomato ripening time is a separate process."
+      ]
+    },
+    {
+      "id": "tomato-whole-refrigerator",
+      "produce": "tomato",
+      "condition": "whole",
+      "location": "refrigerator",
+      "required_ripeness": "ripe",
+      "min_days": 2,
+      "max_days": 3,
+      "age_basis": "since_purchase_or_harvest",
+      "source_ids": [
+        "msu_tomato"
+      ],
+      "source_locator": "Food Safety and Storage: ripe tomatoes",
+      "source_temperature": "Refrigerator crisper; exact temperature not specified",
+      "evidence_type": "household_quality_guidance",
+      "notes": [
+        "Only refrigerate ripe tomatoes for this short window; chilling may reduce flavor and texture."
+      ]
+    },
+    {
+      "id": "banana-cut-counter",
+      "produce": "banana",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "banana-cut-refrigerator",
+      "produce": "banana",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "bittermelon-cut-counter",
+      "produce": "bittermelon",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "bittermelon-cut-refrigerator",
+      "produce": "bittermelon",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "cucumber-cut-counter",
+      "produce": "cucumber",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "cucumber-cut-refrigerator",
+      "produce": "cucumber",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "eggplant-cut-counter",
+      "produce": "eggplant",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "eggplant-cut-refrigerator",
+      "produce": "eggplant",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "orange-cut-counter",
+      "produce": "orange",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "orange-cut-refrigerator",
+      "produce": "orange",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "papaya-cut-counter",
+      "produce": "papaya",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "papaya-cut-refrigerator",
+      "produce": "papaya",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "pineapple-cut-counter",
+      "produce": "pineapple",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "pineapple-cut-refrigerator",
+      "produce": "pineapple",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 4,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "maine"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    },
+    {
+      "id": "tomato-cut-counter",
+      "produce": "tomato",
+      "condition": "cut",
+      "location": "counter",
+      "required_ripeness": "any",
+      "min_days": null,
+      "max_days": null,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "psu",
+        "fda"
+      ],
+      "source_locator": "Two-hour handling rule; one hour above 32°C",
+      "source_temperature": "Room temperature; shorter exposure limit above 32°C",
+      "evidence_type": "handling_action_only",
+      "notes": [
+        "Refrigerate promptly. No multi-day room-temperature shelf life is supplied for cut or peeled produce."
+      ]
+    },
+    {
+      "id": "tomato-cut-refrigerator",
+      "produce": "tomato",
+      "condition": "cut",
+      "location": "refrigerator",
+      "required_ripeness": "any",
+      "min_days": 3,
+      "max_days": 3,
+      "age_basis": "since_cutting_or_peeling",
+      "source_ids": [
+        "canada"
+      ],
+      "source_locator": "Cut-produce refrigerated guidance",
+      "source_temperature": "Refrigerator at or below 4°C",
+      "evidence_type": "generic_cut_produce_guidance",
+      "notes": [
+        "Chill promptly in a clean covered container; count from cutting, not from scanning."
+      ]
+    }
+  ]
+}

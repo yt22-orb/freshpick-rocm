@@ -61,6 +61,32 @@ with sync_playwright() as tool:
  expect(page.locator('.storage-timing')).to_have_attribute('data-state','within_window')
  checks.append('Reference timer shows time left, near-limit, at-limit/past-limit conservative discard; editing clears stale timing and missing age has no countdown')
 
+ # No observed spoilage must not bypass purchase-age limits in either location.
+ expect(page.locator('#storage-clock-note')).to_contain_text('does not reset the clock')
+ page.locator('#storage-location').select_option('counter');page.locator('#days-stored').fill('2')
+ with page.expect_response('**/storage-guidance') as storage_response:
+  page.locator('#storage-form button').click()
+ advice=storage_response.value.json()
+ assert advice['typical_window_days']=={'min':3,'max':7}
+ assert advice['timing']['reference_days_left']=={'min':1.0,'max':5.0}
+ assert advice['reference']['id']=='banana-whole-counter' and advice['dataset_version']=='2026-10-26.1'
+ expect(page.locator('#storage-result')).to_contain_text('3–7 days at room temperature')
+ expect(page.locator('.storage-timing')).to_contain_text('You still have about 1–5 days')
+ page.locator('#days-stored').fill('7');page.locator('#storage-form button').click()
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','at_limit')
+ expect(page.locator('.storage-timing')).to_contain_text('even when no spoilage signs are observed')
+ expect(page.locator('#storage-spoilage')).to_have_value('no')
+ page.screenshot(path=str(OUT/'no-signs-room-limit.png'),full_page=True)
+ page.locator('#storage-location').select_option('refrigerator');page.locator('#days-stored').fill('3')
+ with page.expect_response('**/storage-guidance') as fridge_response:
+  page.locator('#storage-form button').click()
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','at_limit')
+ assert fridge_response.value.json()['reference']['id']=='banana-whole-refrigerator'
+ expect(page.locator('#storage-result')).to_contain_text('3 days in the refrigerator')
+ page.locator('#days-stored').fill('1');page.locator('#storage-form button').click()
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','within_window')
+ checks.append('Versioned shelf-life dataset drives room/refrigerator windows; no signs observed still discards at each location limit')
+
  page.screenshot(path=str(OUT/'report-with-guidance.png'),full_page=True)
  # Correcting a model candidate must invalidate the old advice and freshness assessment.
  page.locator('#produce-corrected').check()
