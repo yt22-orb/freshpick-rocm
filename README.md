@@ -2,6 +2,8 @@
 
 Code to prepare AgriFreshNET images and train a 24-class produce freshness classifier on an AMD GPU with ROCm. **No model has been trained for this repository yet.** Training results must come from a run on the gaming PC.
 
+For the supplied FreshPick UI reference, use the [UI alignment prompt](UI_ALIGNMENT_PROMPT.md). It defines the supported produce labels, inference response shape, and UI behavior expected from the model integration.
+
 ## Dataset
 
 - **Source:** [AgriFreshNET Freshness and Shelf-Life Image Dataset, version 1](https://data.mendeley.com/datasets/42m5tb7yv9/1), DOI [10.17632/42m5tb7yv9.1](https://doi.org/10.17632/42m5tb7yv9.1), by Fouzia Risdin, Hafsha Salauddin, Tasniya aziza tufa, and Md Jakir Hossain. License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
