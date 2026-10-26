@@ -1,6 +1,6 @@
 # FreshPick ROCm training
 
-Code to prepare AgriFreshNET images and train a 24-class produce freshness classifier on an AMD GPU with ROCm. **Training completed on the local RX 7800 XT using ROCm.** Fine-tuned test accuracy is 96.65% and macro F1 is 0.9626. See [fine-tuning results](reports/FINETUNING_RESULTS.md) for the original-versus-fine-tuned comparison. See [measured training results](reports/TRAINING_RESULTS.md) for configuration, artifacts, verification, and random-split limitations.
+Code to prepare AgriFreshNET images and train a 24-class produce freshness classifier on an AMD GPU with ROCm. **Training completed on the local RX 7800 XT using ROCm.** The currently published checkpoint's test accuracy is 96.65% and macro F1 is 0.9626. See [fine-tuning results](reports/FINETUNING_RESULTS.md) for that checkpoint's original-versus-fine-tuned comparison. The newer hierarchical/outlier-exposure pipeline is documented in [the optimization report](reports/MODEL_OPTIMIZATION.md) and must be retrained before claiming replacement metrics.
 
 For the supplied FreshPick UI reference, use the [UI alignment prompt](UI_ALIGNMENT_PROMPT.md). It defines the supported produce labels, inference response shape, and UI behavior expected from the model integration.
 
@@ -40,6 +40,23 @@ Train and evaluate:
 ```bash
 python -m freshpick.train --data-dir prepared_dataset --output-dir runs/mobilenetv3-small --epochs 20 --batch-size 32 --amp
 ```
+
+For production-style fine-tuning, place a diverse set of unsupported-item images
+(including apples) under `ood_dataset/`, keep that directory out of Git, and run:
+
+```bash
+python -m freshpick.train --data-dir prepared_dataset \
+  --output-dir runs/mobilenetv3-hierarchical \
+  --init-checkpoint runs/mobilenetv3-finetuned/best.pt \
+  --ood-dir ood_dataset --epochs 20 --batch-size 32 \
+  --learning-rate 0.00003 --patience 6 --cosine --amp
+```
+
+This adds camera-style augmentation, label smoothing, hierarchical produce and
+freshness losses, and outlier exposure. Twenty percent of the unsupported images
+are held out to calibrate a produce-confidence abstention threshold. Use enough
+diverse, independently sourced images to make that held-out check meaningful; do
+not evaluate on the same individual images used for training.
 
 The model uses MobileNetV3-Small with ImageNet pretrained weights by default; the first run may download those weights. Pass `--no-pretrained` to start from random weights. `--amp` enables mixed precision. Reduce the batch size if GPU memory is insufficient. The script requires ROCm, uses validation macro F1 for checkpoint selection and early stopping, then evaluates the held-out test split once. It saves `splits.csv`, `history.csv`, `best.pt`, `metrics.json`, and `confusion_matrix.csv` under `runs/`. These outputs remain local and are ignored by Git. Record the exact command and environment with any reported scores.
 
@@ -87,9 +104,10 @@ horizontal flips and rotations; evaluation and inference share preprocessing.
 
 Display `freshness_confidence` as “Freshness confidence” and use
 `freshness_probabilities` for the three bars. Scores are uncalibrated. No validated
-abstention threshold or unsupported-item detector is provided: an apple can still
-receive a supported class label. Shelf life, food safety, and explanations of
-specific image features are not model outputs.
+abstention threshold is present in the currently published v0.2.0 checkpoint. A
+new checkpoint trained with `--ood-dir` stores its calibrated threshold and can
+return `status: "uncertain"`; this is rejection, not apple recognition. Shelf life,
+food safety, and explanations of specific image features are not model outputs.
 
 The UI and model API share one origin; no endpoint configuration or CORS setup is
 needed for local use. The information button permits an optional custom endpoint.

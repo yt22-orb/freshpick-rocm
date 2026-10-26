@@ -8,19 +8,31 @@ from freshpick import api
 from freshpick.predict import _pad, response
 
 
-def test_response_uses_joint_winner_and_sums_all_produce():
+def test_response_uses_marginals_for_produce_and_freshness():
     names = [f"{stage}_{produce}" for stage in ("fresh", "semi_fresh", "rotten")
              for produce in ("banana", "bitter melon", "cucumber", "eggplant", "orange", "papaya", "pineapple", "tomato")]
     probabilities = [0.01] * 24
-    probabilities[8] = 0.5
-    probabilities[0] = 0.28
+    probabilities[8] = 0.24
+    probabilities[0] = 0.20
+    probabilities[16] = 0.20
+    probabilities[9] = 0.30
     result = response(names, probabilities, "test")
     assert result["produce"] == "banana"
     assert result["freshness"] == "semi_fresh"
-    assert result["class_confidence"] == 0.5
-    assert result["freshness_confidence"] == pytest.approx(0.57)
+    assert result["class_confidence"] == 0.30
+    assert result["produce_confidence"] == pytest.approx((0.24 + 0.20 + 0.20) / sum(probabilities))
     assert sum(result["freshness_probabilities"].values()) == pytest.approx(1)
+    assert sum(result["produce_probabilities"].values()) == pytest.approx(1)
     assert len(result["class_probabilities"]) == 24
+
+
+def test_response_abstains_below_calibrated_produce_threshold():
+    names = [f"{stage}_{produce}" for stage in ("fresh", "semi_fresh", "rotten")
+             for produce in ("banana", "tomato")]
+    probabilities = [0.18, 0.16, 0.17, 0.16, 0.17, 0.16]
+    result = response(names, probabilities, "test", {"produce_confidence_threshold": 0.55})
+    assert result["status"] == "uncertain"
+    assert result["produce"] == "banana"
 
 
 def test_padding_preserves_aspect_and_exif_orientation():
