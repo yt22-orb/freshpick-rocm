@@ -25,7 +25,7 @@
         <div class="home-copy">
           <p class="eyebrow">A clearer look at your produce</p>
           <h1 id="home-title">Know your fruit.<br />Choose wisely.</h1>
-          <p class="lede">Check the visible condition of supported fruit and vegetables. No account needed.</p>
+          <p class="lede">Check the visible condition of supported fruit and vegetables. Experimental model; confirm its identification.</p>
           <button class="primary-button" type="button" data-action="scan">Scan fruit <span class="arrow-disc" aria-hidden="true">→</span></button>
         </div>
         <section class="empty-history home-history" aria-label="Recent scans">
@@ -97,12 +97,34 @@
           <h2 id="report-produce">No result yet</h2>
           <p class="scan-time" id="report-time">Run a scan to see a result</p>
         </div>
+        <div class="report-card produce-confidence-card">
+          <span class="card-label" id="produce-confidence-label">Produce confidence</span>
+          <strong class="confidence-value" id="produce-confidence">—</strong>
+          <span class="helper" id="produce-score-note">Model score for produce identity; confirm the item below.</span>
+        </div>
         <div class="report-card confidence-card">
           <span class="card-label" id="confidence-label">Freshness confidence</span>
           <strong class="confidence-value" id="report-confidence">—</strong>
           <div class="confidence-track"><span id="confidence-fill"></span></div>
-          <span class="helper">Classification score, not a food-safety probability.</span>
+          <span class="helper">Uncalibrated freshness score for the model’s produce candidate; not a food-safety probability.</span>
         </div>
+        <section class="report-card storage-card" aria-labelledby="storage-title">
+          <h3 id="storage-title">Typical storage guidance</h3>
+          <p class="helper">Confirm what you have and how it is stored. Guidance uses your answers, independently of the model’s guess.</p>
+          <form id="storage-form">
+            <label for="confirmed-produce">What produce is this?</label>
+            <select id="confirmed-produce" required><option value="">Choose the actual produce</option><option value="banana">Banana</option><option value="bittermelon">Bitter melon</option><option value="cucumber">Cucumber</option><option value="eggplant">Eggplant</option><option value="orange">Orange</option><option value="papaya">Papaya</option><option value="pineapple">Pineapple</option><option value="tomato">Tomato</option><option value="other">Other / not sure</option></select>
+            <label class="check-label"><input type="checkbox" id="produce-confirmed" required> I checked the produce myself</label>
+            <label for="storage-condition">Whole or cut / peeled?</label><select id="storage-condition" required><option value="">Choose condition</option><option value="whole">Whole</option><option value="cut">Cut or peeled</option></select>
+            <label for="storage-ripeness">Ripeness you observe</label><select id="storage-ripeness" required><option value="">Choose ripeness</option><option value="ripe">Ready to use / ripe</option><option value="unripe">Unripe</option><option value="unknown">Not sure</option></select>
+            <label for="storage-location">Where is it stored?</label><select id="storage-location" required><option value="">Choose storage</option><option value="counter">Counter / room temperature</option><option value="refrigerator">Refrigerator</option></select>
+            <label for="storage-spoilage">Mold, unusual odor, leakage or major softening?</label><select id="storage-spoilage" required><option value="">Check the item first</option><option value="no">No signs observed</option><option value="yes">Yes</option><option value="unknown">Not sure</option></select>
+            <label for="days-stored">Days already stored in this condition (optional)</label><input id="days-stored" type="number" min="0" max="365" step="0.5">
+            <button class="save-button" type="submit">Get storage guidance</button>
+          </form>
+          <div id="storage-result" aria-live="polite"><p>Complete the details above to see sourced storage guidance.</p></div>
+          <p class="helper">Typical ranges describe general storage conditions. They are not this item’s predicted days remaining.</p>
+        </section>
         <div class="report-card guidance-card">
           <strong>Visible condition</strong>
           <p id="guidance-copy">Run a scan to receive a cautious description of visible condition.</p>

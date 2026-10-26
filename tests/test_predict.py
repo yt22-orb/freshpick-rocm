@@ -72,3 +72,18 @@ def test_api_unsupported_oversized_and_inference_failure(monkeypatch):
     result = client.post("/predict", files={"file": ("image.png", data.getvalue())})
     assert result.status_code == 503
     assert "internal failure" not in result.text
+
+
+@pytest.mark.parametrize('legacy_produce,identifier_produce,status,available', [
+    ('cucumber','banana','ok',False),('banana','banana','uncertain',False),
+    ('banana','banana','ok',True),
+])
+def test_separate_identity_cannot_relabel_incompatible_freshness(legacy_produce,identifier_produce,status,available):
+    from freshpick.predict import combine_predictions
+    base={'produce':legacy_produce,'status':'ok','freshness':'fresh','freshness_probabilities':{'fresh':.8,'semi_fresh':.1,'rotten':.1}}
+    identity={'produce':identifier_produce,'status':status,'produce_confidence':.9}
+    result=combine_predictions(base,identity)
+    assert result['freshness_available'] is available
+    assert result['freshness_model_produce']==legacy_produce and result['produce']==identifier_produce
+    assert result['freshness_probabilities']==base['freshness_probabilities']
+    assert base['produce']==legacy_produce

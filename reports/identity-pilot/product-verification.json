@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "Simulated camera capture reaches the real inference service and Report",
+    "Real white-background banana now identified as banana by the separate eight-class identifier",
+    "Confirmed ripe banana + refrigerator returns a source-linked three-day typical window with elapsed-age caveat",
+    "User correction stays separate from the banana model guess; stale guidance and freshness are suppressed",
+    "Export preserves model versus user identity, suppresses mismatched freshness, and includes source guidance",
+    "Cut produce on counter receives a refrigeration action, not an invented remaining-days range",
+    "Observed spoilage blocks numerical storage guidance",
+    "History persists one updated scan without retaining the image or overwriting the model identity",
+    "Actual invalid-image and simulated server errors return to Scan with no fake success",
+    "Uncertain prediction has no definitive freshness; Inspector still exposes actual model diagnostics",
+    "Cancelling a held request returns to Scan",
+    "All main layouts including new guidance controls fit 320/390/768/1440px widths",
+    "Simulated camera permission denial offers a gallery fallback"
+  ],
+  "javascript_errors": [],
+  "identifier_version": "clip-vit-b32-b9d12fbf91aeda5d",
+  "python_tests": 32,
+  "physical_camera": "not verified; browser camera simulated"
+}

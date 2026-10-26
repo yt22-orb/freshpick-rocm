@@ -52,6 +52,7 @@ function showScreen(name) {
 }
 
 function useFile(file) {
+  storageController?.abort();
   if (!file) return;
   if (!file.type.startsWith('image/')) {
     showToast('Choose an image file to scan.');
@@ -143,6 +144,8 @@ async function submitImage(file) {
     const normalized = normalizeResult(payload);
     if (!['ok', 'uncertain'].includes(normalized.status)) throw new Error(payload.message || 'The model could not assess this image.');
     if (lastResult?.imageUrl && lastResult.imageUrl !== activeImageUrl) URL.revokeObjectURL(lastResult.imageUrl);
+    document.querySelector('#storage-form').reset();
+    document.querySelector('#storage-result').innerHTML = '<p>Complete the details above to see sourced storage guidance.</p>';
     lastResult = { ...normalized, capturedAt: new Date().toISOString() };
     saveHistory(lastResult);
     renderReport(lastResult);
@@ -195,6 +198,13 @@ function normalizeResult(payload) {
   Object.keys(produceProbabilities).forEach((key) => { produceProbabilities[key] /= total; });
   const predictedFreshness = Object.entries(freshnessProbabilities)
     .reduce((best, item) => item[1] > best[1] ? item : best)[0];
+  if (payload.produce_probabilities) {
+    const supplied = payload.produce_probabilities;
+    if (Object.keys(supplied).length !== 8 || Object.keys(produceLabels).some((key) => !Number.isFinite(supplied[key]) || supplied[key] < 0 || supplied[key] > 1)) throw new Error('Invalid produce probabilities.');
+    const suppliedTotal = Object.values(supplied).reduce((sum, value) => sum + value, 0);
+    if (Math.abs(suppliedTotal - 1) > 0.01) throw new Error('Invalid produce probability total.');
+    Object.keys(produceLabels).forEach((key) => { produceProbabilities[key] = supplied[key] / suppliedTotal; });
+  }
   const predictedProduce = Object.entries(produceProbabilities)
     .reduce((best, item) => item[1] > best[1] ? item : best)[0];
   const freshnessConfidence = freshnessProbabilities[predictedFreshness];
@@ -207,6 +217,9 @@ function normalizeResult(payload) {
     status: payload.status, produce: predictedProduce, freshness: predictedFreshness,
     classConfidence, produceConfidence, freshnessConfidence,
     produceProbabilities, freshnessProbabilities,
+    freshnessAvailable: payload.freshness_available !== false,
+    identifierVersion: payload.identifier_version || null,
+    uncertaintyReason: payload.uncertainty_reason || null,
     classProbabilities, modelVersion: payload.model_version || 'Unspecified',
     imageName: activeFile?.name || 'Captured image', imageUrl: activeImageUrl,
   };
@@ -221,22 +234,27 @@ function renderReport(result) {
   const stage = result.status === 'uncertain' ? 'Uncertain' : (stageLabels[result.freshness] || 'Uncertain');
   const produce = produceLabels[result.produce] || titleCase(result.produce);
   const uncertain = result.status === 'uncertain';
-  const confidence = clamp(uncertain ? result.produceConfidence : result.freshnessConfidence);
+  const corrected = result.confirmedProduce && result.confirmedProduce !== result.produce;
+  const freshnessAvailable = !uncertain && result.freshnessAvailable !== false && !corrected;
+  const confidence = clamp(result.freshnessConfidence);
+  document.querySelector('#produce-confidence-label').textContent = corrected ? `Model’s ${produce} score` : 'Produce confidence';
+  document.querySelector('#produce-confidence').textContent = `${(clamp(result.produceConfidence) * 100).toFixed(1)}%`;
+  document.querySelector('#produce-score-note').textContent = `Model candidate: ${produce}. ${result.confirmedProduce ? `User confirmed: ${produceLabels[result.confirmedProduce] || 'Other / unsure'}.` : 'Confirm or correct it below.'} A high score can still be wrong.`;
   const reportFruit = document.querySelector('#report-fruit');
   reportFruit.src = result.imageUrl || 'assets/fruit.svg';
   reportFruit.alt = result.imageUrl ? 'Scanned produce' : '';
   reportFruit.closest('.result-fruit').classList.toggle('has-photo', Boolean(result.imageUrl));
   const reportStatus = document.querySelector('#report-status');
   reportStatus.classList.remove('fresh', 'semi_fresh', 'rotten', 'uncertain');
-  reportStatus.classList.add(uncertain ? 'uncertain' : result.freshness);
-  reportStatus.querySelector('span:first-child').textContent = uncertain ? '?' : '✓';
-  reportStatus.querySelector('span:last-child').textContent = stage;
-  document.querySelector('#report-produce').textContent = uncertain ? 'Could not classify clearly' : produce;
+  reportStatus.classList.add(!freshnessAvailable ? 'uncertain' : result.freshness);
+  reportStatus.querySelector('span:first-child').textContent = !freshnessAvailable ? '?' : '✓';
+  reportStatus.querySelector('span:last-child').textContent = freshnessAvailable ? stage : 'Freshness not verified';
+  document.querySelector('#report-produce').textContent = result.confirmedProduce ? `${produceLabels[result.confirmedProduce] || 'Other / unsure'} · confirmed by you` : (uncertain ? 'Could not classify clearly' : produce);
   document.querySelector('#report-time').textContent = `Scanned ${new Date(result.capturedAt).toLocaleString()}`;
-  document.querySelector('#confidence-label').textContent = uncertain ? 'Top produce score' : 'Freshness confidence';
-  document.querySelector('#report-confidence').textContent = `${(confidence * 100).toFixed(1)}%`;
-  document.querySelector('#confidence-fill').style.width = `${confidence * 100}%`;
-  document.querySelector('#guidance-copy').textContent = guidance(result.status === 'uncertain' ? 'uncertain' : result.freshness);
+  document.querySelector('#confidence-label').textContent = 'Freshness confidence';
+  document.querySelector('#report-confidence').textContent = freshnessAvailable ? `${(confidence * 100).toFixed(1)}%` : 'Unavailable';
+  document.querySelector('#confidence-fill').style.width = `${freshnessAvailable ? confidence * 100 : 0}%`;
+  document.querySelector('#guidance-copy').textContent = freshnessAvailable ? guidance(result.freshness) : 'A verified freshness assessment is unavailable. Confirm the produce and enter its observed condition for independent storage guidance; changing the produce does not relabel the model’s freshness prediction.';
 }
 
 function guidance(stage) {
@@ -264,7 +282,7 @@ function renderInspector(tab) {
   }
   if (tab === 'model') {
     const label = lastResult.status === 'uncertain' ? 'Top candidate' : 'Predicted produce';
-    content.innerHTML = `<div class="detail-row"><div><strong>Model version</strong><span>Reported by inference service</span></div><span>${escapeHtml(lastResult.modelVersion)}</span></div><div class="detail-row"><div><strong>${label}</strong><span>Marginal produce result · ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%</span></div><span>${escapeHtml(produceLabels[lastResult.produce] || titleCase(lastResult.produce))}</span></div><div class="unavailable"><strong>Scope</strong>Eight produce types and three inherited freshness labels. Unsupported items are rejected only by checkpoints calibrated with out-of-distribution images.</div>`;
+    content.innerHTML = `<div class="detail-row"><div><strong>Freshness model</strong><span>Reported by inference service</span></div><span>${escapeHtml(lastResult.modelVersion)}</span></div><div class="detail-row"><div><strong>Identifier version</strong><span>Separate produce decision</span></div><span>${escapeHtml(lastResult.identifierVersion || '24-class baseline')}</span></div><div class="detail-row"><div><strong>${label}</strong><span>Marginal produce result · ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%</span></div><span>${escapeHtml(produceLabels[lastResult.produce] || titleCase(lastResult.produce))}</span></div><div class="unavailable"><strong>Scope</strong>Experimental eight-produce identification and inherited freshness labels. Rejection was calibrated on a small image pilot and is not verified general unknown-item recognition. ${lastResult.freshnessAvailable === false ? 'The identity and freshness models disagree, or the identity check failed; freshness is unavailable.' : ''}</div>`;
     return;
   }
   const imageName = escapeHtml(lastResult.imageName || 'Analyzed image');
@@ -275,14 +293,16 @@ function renderInspector(tab) {
   const classes = Object.entries(lastResult.classProbabilities).map(([key, value]) => ({ key, value: Number(value) }))
     .sort((a, b) => b.value - a.value).map(({ key, value }) => `<div class="prob-row"><div class="prob-head"><span>${escapeHtml(titleCase(key.replaceAll('_', ' ')))}</span><strong>${(clamp(value) * 100).toFixed(1)}%</strong></div><div class="bar-track"><span class="bar-fill" style="width:${clamp(value) * 100}%"></span></div></div>`).join('');
   const thumb = lastResult.imageUrl ? escapeHtml(lastResult.imageUrl) : 'assets/fruit.svg';
-  content.innerHTML = `<div class="inspector-image-row"><div class="mini-fruit"><img src="${thumb}" alt="" /></div><div><strong>Analyzed image</strong><span>${imageName}</span></div></div><section class="probability-card"><h2>Freshness probabilities</h2>${bars}<p class="helper">Summed across the supported produce classes. These are model scores, not food-safety probabilities.</p></section><details class="all-classes"><summary>All 24 class probabilities</summary><div class="class-list">${classes}</div></details>`;
+  content.innerHTML = `<div class="inspector-image-row"><div class="mini-fruit"><img src="${thumb}" alt="" /></div><div><strong>Analyzed image</strong><span>${imageName}</span></div></div><section class="probability-card"><h2>Freshness probabilities</h2>${bars}<p class="helper">Raw summed scores from the 24-class freshness model. These are not a verified assessment when identity is uncertain or corrected, and are not food-safety probabilities.</p></section><details class="all-classes"><summary>All 24 class probabilities</summary><div class="class-list">${classes}</div></details>`;
 }
 
 function saveHistory(result) {
   const history = readHistory();
+  const existing = history.findIndex((item) => item.capturedAt === result.capturedAt);
+  if (existing >= 0) history.splice(existing, 1);
   history.unshift({ status: result.status, produce: result.produce, freshness: result.freshness,
-    confidence: result.status === 'uncertain' ? result.produceConfidence : result.freshnessConfidence,
-    capturedAt: result.capturedAt });
+    confidence: result.produceConfidence, produceConfidence: result.produceConfidence, freshnessConfidence: result.freshnessConfidence, freshnessAvailable: result.freshnessAvailable,
+    capturedAt: result.capturedAt, confirmedProduce: result.confirmedProduce || null, storageGuidance: result.storageGuidance || null });
   localStorage.setItem('freshpick-history', JSON.stringify(history.slice(0, 12)));
 }
 
@@ -291,38 +311,45 @@ function readHistory() {
   catch { return []; }
 }
 
+function historyIdentity(item) {
+  const model = produceLabels[item.produce] || titleCase(item.produce);
+  return item.confirmedProduce ? `${produceLabels[item.confirmedProduce] || 'Other / unsure'} (user confirmed; model: ${model})` : model;
+}
+
+function historyTitle(item) { return item.confirmedProduce ? historyIdentity(item) : (item.status === 'uncertain' ? 'Uncertain result' : historyIdentity(item)); }
+function historyScoreLabel(item) { return item.produceConfidence === undefined ? 'Saved score' : 'Produce score'; }
+
 function renderHistory() {
   const history = readHistory();
   const target = document.querySelector('#history-list');
   const recent = document.querySelector('.home-history');
   recent.innerHTML = history.length
-    ? `<div class="empty-mark" aria-hidden="true">${history[0].status === 'uncertain' ? '?' : '✓'}</div><div><strong>${history[0].status === 'uncertain' ? 'Uncertain result' : escapeHtml(produceLabels[history[0].produce] || titleCase(history[0].produce))}</strong><span>${history[0].status === 'uncertain' ? 'Top produce score' : (stageLabels[history[0].freshness] || 'Uncertain')} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
+    ? `<div class="empty-mark" aria-hidden="true">${history[0].status === 'uncertain' ? '?' : '✓'}</div><div><strong>${escapeHtml(historyTitle(history[0]))}</strong><span>${historyScoreLabel(history[0])} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
     : '<div class="empty-mark" aria-hidden="true">+</div><div><strong>No scans yet</strong><span>Your latest result will appear here.</span></div>';
   if (!history.length) {
     target.innerHTML = '<div class="history-empty"><strong>No scans yet</strong>Your scan history will appear here on this device.</div>';
     return;
   }
-  target.innerHTML = history.map((item) => `<article class="history-item"><div><strong>${item.status === 'uncertain' ? 'Uncertain result' : escapeHtml(produceLabels[item.produce] || titleCase(item.produce))}</strong><span>${new Date(item.capturedAt).toLocaleString()}</span></div><strong>${item.status === 'uncertain' ? 'Uncertain' : (stageLabels[item.freshness] || 'Uncertain')} · ${(clamp(item.confidence) * 100).toFixed(1)}%</strong></article>`).join('');
+  target.innerHTML = history.map((item) => `<article class="history-item"><div><strong>${escapeHtml(historyTitle(item))}</strong><span>${new Date(item.capturedAt).toLocaleString()}</span></div><strong>${historyScoreLabel(item)} · ${(clamp(item.confidence) * 100).toFixed(1)}%</strong></article>`).join('');
 }
 
 function exportReport() {
   if (!lastResult) return showToast('There is no report to export yet.');
-  const uncertain = lastResult.status === 'uncertain';
-  const text = (uncertain ? [
-    'FreshPick visible-condition report',
-    'Status: Uncertain',
-    `Top produce candidate: ${produceLabels[lastResult.produce] || titleCase(lastResult.produce)}`,
-    `Top produce score: ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%`,
-    'Try another clear photo of one supported item.',
-  ] : [
-    'FreshPick visible-condition report',
-    `Produce: ${produceLabels[lastResult.produce] || titleCase(lastResult.produce)}`,
-    `Freshness: ${stageLabels[lastResult.freshness] || lastResult.freshness}`,
-    `Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`,
-  ]).concat([
+  const freshnessAvailable = lastResult.status !== 'uncertain' && lastResult.freshnessAvailable !== false && (!lastResult.confirmedProduce || lastResult.confirmedProduce === lastResult.produce);
+  const text = [
+    'FreshPick experimental image assessment',
+    `Status: ${lastResult.status}`,
+    `Model produce candidate: ${produceLabels[lastResult.produce] || lastResult.produce}`,
+    `Produce confidence: ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%`,
+    `User-confirmed produce: ${lastResult.confirmedProduce ? (produceLabels[lastResult.confirmedProduce] || 'Other / unsure') : 'Not confirmed'}`,
+    `Freshness: ${freshnessAvailable ? stageLabels[lastResult.freshness] : 'Unavailable; candidate is not a verified assessment for this produce'}`,
+    ...(freshnessAvailable ? [`Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`] : []),
+    ...(lastResult.storageGuidance ? ['Typical storage guidance: ' + lastResult.storageGuidance.window_label, ...lastResult.storageGuidance.suggestions, ...lastResult.storageGuidance.assumptions, lastResult.storageGuidance.disclaimer, ...lastResult.storageGuidance.sources.map((source) => source.title + ': ' + source.url + ' (reviewed ' + source.reviewed_on + ')')] : ['Storage guidance: Not requested']),
+    `Model version: ${lastResult.modelVersion}`,
+    `Identifier version: ${lastResult.identifierVersion || '24-class baseline'}`,
     `Scanned: ${new Date(lastResult.capturedAt).toLocaleString()}`,
-    'This image assessment cannot confirm internal quality, contamination, or food safety.',
-  ]).join('\n');
+    'This image assessment cannot confirm internal quality, contamination, food safety, or remaining shelf life.',
+  ].join('\n');
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
   const link = document.createElement('a');
   link.href = url;
@@ -413,3 +440,45 @@ document.querySelector('#settings-form').addEventListener('submit', (event) => {
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopCamera(); });
 
 renderHistory();
+
+let storageController = null;
+function invalidateStorage() {
+  storageController?.abort();
+  storageController = null;
+  if (!lastResult) return;
+  lastResult.storageGuidance = null;
+  const confirmed = document.querySelector('#produce-confirmed').checked;
+  lastResult.confirmedProduce = confirmed ? document.querySelector('#confirmed-produce').value || null : null;
+  document.querySelector('#storage-result').textContent = document.querySelector('#confirmed-produce').value === 'other' ? 'No item-specific guidance is available for other or unidentified items.' : 'Details changed. Submit again for matching storage guidance.';
+  renderReport(lastResult);
+  saveHistory(lastResult);
+}
+document.querySelector('#storage-form').addEventListener('input', invalidateStorage);
+document.querySelector('#storage-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!lastResult) return;
+  const result = lastResult;
+  const target = document.querySelector('#storage-result');
+  const produce = document.querySelector('#confirmed-produce').value;
+  if (!produceLabels[produce]) { target.textContent = 'No item-specific guidance is available for other or unidentified items.'; return; }
+  const data = {produce, confirmed: document.querySelector('#produce-confirmed').checked,
+    condition: document.querySelector('#storage-condition').value,
+    ripeness: document.querySelector('#storage-ripeness').value,
+    location: document.querySelector('#storage-location').value,
+    spoilage: document.querySelector('#storage-spoilage').value,
+    days_stored: document.querySelector('#days-stored').value === '' ? null : Number(document.querySelector('#days-stored').value)};
+  storageController?.abort();
+  const controller = new AbortController(); storageController = controller;
+  target.textContent = 'Loading storage guidance…';
+  try {
+    const response = await fetch('/storage-guidance', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:controller.signal});
+    if (!response.ok) throw new Error('Storage guidance could not be loaded. Check your answers and try again.');
+    const advice = await response.json();
+    if (controller.signal.aborted || result !== lastResult) return;
+    result.confirmedProduce = produce; result.storageGuidance = advice;
+    target.innerHTML = `<strong>${escapeHtml(advice.window_label)}</strong><ul>${[...advice.suggestions,...advice.assumptions].map((text) => `<li>${escapeHtml(text)}</li>`).join('')}</ul><p class="helper">${escapeHtml(advice.disclaimer)}</p><p>Sources: ${advice.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)}</a> (reviewed ${escapeHtml(source.reviewed_on)})`).join('; ')}</p>`;
+    saveHistory(result); renderReport(result);
+  } catch (error) {
+    if (error.name !== 'AbortError' && result === lastResult) target.textContent = error.message;
+  }
+});

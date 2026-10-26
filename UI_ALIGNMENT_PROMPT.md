@@ -63,3 +63,24 @@ The training and inference code must use ROCm on the configured gaming PC. Verif
 ### Verification and handoff
 
 Run the UI flows with real inference responses and with loading, invalid-image, unsupported-item, low-confidence, and server-error states. Check that the mobile layouts in the reference remain usable. Confirm the displayed freshness probabilities come from the response, and that neither the screenshots’ sample values nor placeholder data appear as real predictions. Update the README with setup, run, API, and training instructions; report which UI screens and end-to-end flows were actually verified. Do not claim UI integration or ROCm training that was not completed.
+
+
+## Implemented separate-identifier pilot contract (v0.3.0)
+
+The pilot now keeps the 24-class MobileNet outputs as freshness diagnostics and
+adds an independent eight-class identifier. Its `produce_probabilities` (all eight
+normalized entries), `produce_confidence` and `identifier_version` describe the
+identity head. These need not equal marginal sums of `class_probabilities` from
+the separate 24-class model. `freshness_probabilities` continue to be the three
+summed 24-class outputs. `class_confidence` refers to that model's top joint class.
+
+`freshness_model_produce` preserves the original CNN produce candidate;
+`freshness_available` is false on identity rejection or disagreement. The UI must
+also suppress incompatible freshness after an explicit user correction. Model
+scores must never be relabeled as scores for user-confirmed produce. User identity
+and storage inputs remain separate in history and exports.
+
+`POST /storage-guidance` supplies source-backed general storage guidance from
+explicit user answers. Numeric ranges are typical household reference windows,
+never predictions of the scanned item's remaining shelf life. Missing confirmation,
+uncertain spoilage, and unsupported conditions must not produce invented ranges.

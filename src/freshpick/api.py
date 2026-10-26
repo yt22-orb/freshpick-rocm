@@ -9,8 +9,9 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 from .predict import Predictor
+from .storage import StorageRequest, storage_guidance
 
-app = FastAPI(title="FreshPick inference", version="0.1.0")
+app = FastAPI(title="FreshPick inference", version="0.3.0")
 _predictor = None
 _lock = Lock()
 MAX_BYTES = 20 * 1024 * 1024
@@ -35,7 +36,9 @@ def predict(file: UploadFile | None = File(None), image: UploadFile | None = Fil
     try:
         with _lock:
             if _predictor is None:
-                _predictor = Predictor(os.environ.get("FRESHPICK_CHECKPOINT", "runs/mobilenetv3-finetuned/best.pt"))
+                _predictor = Predictor(
+                    os.environ.get("FRESHPICK_CHECKPOINT", "runs/mobilenetv3-finetuned/best.pt"),
+                    identifier_checkpoint=os.environ.get("FRESHPICK_IDENTIFIER", "runs/identifier/best.pt") or None)
             return _predictor.predict(image)
     except FileNotFoundError as error:
         raise HTTPException(503, str(error)) from error
@@ -44,6 +47,11 @@ def predict(file: UploadFile | None = File(None), image: UploadFile | None = Fil
         raise HTTPException(503, "Model inference unavailable; check server logs") from error
     finally:
         image.close()
+
+
+@app.post("/storage-guidance")
+def guidance(request: StorageRequest):
+    return storage_guidance(request)
 
 
 # Register static routing last so API routes and /docs remain available.

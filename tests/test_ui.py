@@ -1,20 +1,21 @@
+"""Browser interaction coverage lives in scripts/verify_product_flows.py.
+
+Keep the document's accessible control contract explicit for the Python checks.
+"""
+from html.parser import HTMLParser
 from pathlib import Path
 
 
-ROOT = Path(__file__).parents[1]
+class Controls(HTMLParser):
+    def __init__(self):super().__init__();self.ids=set();self.labels=set()
+    def handle_starttag(self,tag,attrs):
+        values=dict(attrs)
+        if 'id' in values:self.ids.add(values['id'])
+        if tag=='label' and 'for' in values:self.labels.add(values['for'])
 
 
-def test_ui_has_no_shelf_life_feature():
-    html = (ROOT / "ui" / "index.html").read_text().lower()
-    javascript = (ROOT / "ui" / "app.js").read_text().lower()
-    assert "use-period" not in html
-    assert "shelf-card" not in html
-    assert "shelf-life" not in html
-    assert "shelf-life" not in javascript
-
-
-def test_uncertain_results_use_produce_score_and_neutral_copy():
-    javascript = (ROOT / "ui" / "app.js").read_text()
-    assert "uncertain ? result.produceConfidence : result.freshnessConfidence" in javascript
-    assert "Top produce score" in javascript
-    assert "Top produce candidate" in javascript
+def test_guidance_inputs_have_explicit_accessible_labels():
+    controls=Controls();controls.feed((Path(__file__).parents[1]/'ui/index.html').read_text())
+    expected={'confirmed-produce','storage-condition','storage-ripeness','storage-location','storage-spoilage','days-stored'}
+    assert expected<=controls.ids and expected<=controls.labels
+    assert {'produce-confidence','report-confidence','storage-result'}<=controls.ids

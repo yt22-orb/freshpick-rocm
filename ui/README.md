@@ -17,3 +17,12 @@ The UI sends `POST` to the configured endpoint as `multipart/form-data`, with th
 The included API loads `runs/mobilenetv3-finetuned/best.pt`, or the path in `FRESHPICK_CHECKPOINT`. The trained checkpoint exists locally and stays ignored by Git. Missing weights produce a visible service error; no successful prediction is fabricated. Scan history stores the produce label, freshness label, score, and timestamp in local browser storage; it does not retain the scanned image. The current image remains in memory for the Report and Inspector. Home shows the latest real scan. Clearing browser site data removes saved history.
 
 The model supports banana, bitter melon, cucumber, eggplant, orange, papaya, pineapple, and tomato. It has no apple or general “other produce” class. Feature explanations and shelf-life estimates are unavailable. The report includes visible-condition and food-safety limits.
+
+
+The current pilot also requires the separate identity checkpoint and `.[identifier]`.
+Use the setup in the root README. Produce and freshness scores are distinct;
+identity disagreement, rejection or a user correction withholds freshness.
+The storage form requires explicit user confirmation and observed storage details.
+Typical ranges link to their reviewed sources, are invalidated on edits, and are
+included in exports/history separately from model predictions. No item-specific
+remaining-day estimate is made. See `reports/STORAGE_GUIDANCE.md`.

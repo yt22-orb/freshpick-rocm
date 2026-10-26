@@ -1,3 +1,29 @@
+# Improvement plan — implementation status
+
+The planned product and model work is now implemented on this branch, which
+includes main-branch commit `0a01691519f1782a2c5ee9328f3ecdc0ab28b486`.
+The historic audit below continues to describe the earlier `be31339` snapshot.
+
+Completed:
+
+- Separate identity/freshness displays and an eight-class identification head.
+- Explicit produce confirmation and correction without relabeling model scores.
+- Conditional, sourced household storage windows and handling suggestions.
+- Persistent source/assumption records in exports and limited browser history.
+- An 80-photo source-grouped web pilot and separate unsupported validation/test pool.
+- ROCm runs of the augmented CNN and a separate identity/freshness-head experiment.
+- Validation-based model/head selection and pilot rejection calibration.
+- Browser tests of normal, corrected, uncertain, invalid, unavailable, cancellation,
+  storage, export, history and responsive states.
+
+See [implemented improvements](IMPLEMENTED_IMPROVEMENTS.md) for measured results,
+rejected candidates, inference coverage and limitations. The model release is a
+local research pilot. A larger future benchmark with true physical item/session
+IDs and independently reviewed freshness labels remains the next validation step.
+Individual-item shelf-life prediction and production reliability are not claimed.
+
+---
+
 # FreshPick improvement plan
 
 ## Branch scope and baseline

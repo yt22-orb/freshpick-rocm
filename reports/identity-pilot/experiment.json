@@ -1,0 +1,221 @@
+{
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.11.0+rocm7.2",
+    "hip": "7.2.26015",
+    "gpu": "AMD Radeon RX 7800 XT"
+  },
+  "encoder": {
+    "model_name": "ViT-B-32",
+    "pretrained": "laion2b_s34b_b79k",
+    "revision": "1a25a446712ba5ee05982a381eed697ef9b435cf",
+    "frozen": true,
+    "pretraining_overlap_with_web": "Unknown; not an independent pretraining benchmark"
+  },
+  "validation_guard": "Dataset produce validation macro F1 must be at least 0.98; then select weighted validation score.",
+  "selection": {
+    "name": "supervised_identity_reg_0.1",
+    "validation_score": 0.8488079975579975,
+    "dataset_validation_macro_f1": 0.9988034188034188,
+    "web_validation_macro_f1": 0.7988095238095239
+  },
+  "candidates": [
+    {
+      "name": "text_prototypes",
+      "validation_score": 0.8766293811533225,
+      "dataset_validation_macro_f1": 0.6850889531847186,
+      "web_validation_macro_f1": 0.9404761904761905
+    },
+    {
+      "name": "supervised_identity_reg_0.1",
+      "validation_score": 0.8488079975579975,
+      "dataset_validation_macro_f1": 0.9988034188034188,
+      "web_validation_macro_f1": 0.7988095238095239
+    },
+    {
+      "name": "supervised_identity_reg_1.0",
+      "validation_score": 0.8452870733115102,
+      "dataset_validation_macro_f1": 0.9972197218174692,
+      "web_validation_macro_f1": 0.7946428571428572
+    }
+  ],
+  "temperature": 1.5340427630625681,
+  "calibration": {
+    "margin_threshold": -0.0279928520321846,
+    "known_domain_acceptance": {
+      "web": 1.0,
+      "agrifresh": 0.9355670103092784
+    },
+    "known_domain_n": {
+      "web": 20,
+      "agrifresh": 776
+    },
+    "ood_n": 7,
+    "ood_rejection": 1.0,
+    "validation_balanced_score": 0.9838917525773196,
+    "scope": "Small source-grouped Commons pilot plus AgriFresh validation; not verified general OOD recognition."
+  },
+  "web_test": {
+    "n": 20,
+    "correct": 17,
+    "accuracy": 0.85,
+    "macro_f1": 0.8446428571428573,
+    "per_class": {
+      "banana": {
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1-score": 0.8,
+        "support": 2.0
+      },
+      "bittermelon": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1-score": 0.5,
+        "support": 2.0
+      },
+      "eggplant": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "papaya": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1-score": 0.8571428571428571,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "tomato": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "accuracy": 0.85,
+      "macro avg": {
+        "precision": 0.8645833333333333,
+        "recall": 0.8541666666666666,
+        "f1-score": 0.8446428571428573,
+        "support": 20.0
+      },
+      "weighted avg": {
+        "precision": 0.8791666666666667,
+        "recall": 0.85,
+        "f1-score": 0.8485714285714285,
+        "support": 20.0
+      }
+    }
+  },
+  "dataset_test": {
+    "n": 777,
+    "correct": 775,
+    "accuracy": 0.9974259974259975,
+    "macro_f1": 0.9966694047769493,
+    "per_class": {
+      "banana": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 100.0
+      },
+      "bittermelon": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 78.0
+      },
+      "cucumber": {
+        "precision": 1.0,
+        "recall": 0.9838709677419355,
+        "f1-score": 0.991869918699187,
+        "support": 62.0
+      },
+      "eggplant": {
+        "precision": 0.9896907216494846,
+        "recall": 1.0,
+        "f1-score": 0.9948186528497409,
+        "support": 96.0
+      },
+      "orange": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 113.0
+      },
+      "papaya": {
+        "precision": 0.9866666666666667,
+        "recall": 0.9866666666666667,
+        "f1-score": 0.9866666666666667,
+        "support": 75.0
+      },
+      "pineapple": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 83.0
+      },
+      "tomato": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 170.0
+      },
+      "accuracy": 0.9974259974259975,
+      "macro avg": {
+        "precision": 0.9970446735395189,
+        "recall": 0.9963172043010753,
+        "f1-score": 0.9966694047769493,
+        "support": 777.0
+      },
+      "weighted avg": {
+        "precision": 0.9974392654805025,
+        "recall": 0.9974259974259975,
+        "f1-score": 0.9974240999136741,
+        "support": 777.0
+      }
+    }
+  },
+  "selective_dataset_test": {
+    "n": 777,
+    "accepted": 716,
+    "coverage": 0.9214929214929215
+  },
+  "selective_web_test": {
+    "accepted": 19,
+    "n": 20,
+    "coverage": 0.95,
+    "accuracy_if_accepted": 0.8421052631578947
+  },
+  "ood_test": {
+    "n": 8,
+    "rejected": 7,
+    "rejection_rate": 0.875
+  },
+  "separate_freshness_head": {
+    "validation_macro_f1": 0.9083803619307371,
+    "epoch": 130,
+    "test_accuracy": 0.8893178893178894,
+    "test_macro_f1": 0.8867953642476546,
+    "web_accuracy": null,
+    "deployment": "Experimental only; web freshness labels unavailable"
+  },
+  "checkpoint_sha256": "b9d12fbf91aeda5dcc00e769f90fc2751bf3cb8b2cc11128f239d9ee61eef096"
+}

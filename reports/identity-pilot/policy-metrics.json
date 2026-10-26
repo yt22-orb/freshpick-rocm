@@ -1,0 +1,8 @@
+{
+  "n": 777,
+  "identity_accepted": 716,
+  "freshness_available": 714,
+  "freshness_assessment_coverage": 0.918918918918919,
+  "joint_accuracy_when_freshness_available": 0.9635854341736695,
+  "note": "Offline FP32 batches; source image selection and model hashes recorded. API/UI additionally verified on live probes. Unavailable results are not counted as successful complete assessments."
+}

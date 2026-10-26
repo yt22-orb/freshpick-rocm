@@ -74,8 +74,19 @@ def response(names, probabilities, version, abstention=None):
         "model_version": version}
 
 
+def combine_predictions(freshness, identity):
+    """Keep independent identity output distinct from the 24-class diagnostics."""
+    result = dict(freshness)
+    result['freshness_model_produce'] = freshness['produce']
+    result['freshness_available'] = (identity['status'] == 'ok' and freshness['status'] == 'ok'
+                                     and identity['produce'] == freshness['produce'])
+    result.update(identity)
+    result['pipeline'] = 'separate-eight-produce-identifier-and-24-class-freshness'
+    return result
+
+
 class Predictor:
-    def __init__(self, checkpoint):
+    def __init__(self, checkpoint, identifier_checkpoint=None):
         checkpoint = Path(checkpoint)
         if not checkpoint.is_file():
             raise FileNotFoundError("Model checkpoint unavailable; train the model first")
@@ -90,19 +101,32 @@ class Predictor:
         self.model.load_state_dict(saved["state_dict"])
         self.model.to("cuda").eval()
         self.transform = image_transform()
+        self.identifier = None
+        if identifier_checkpoint:
+            from .identifier import Identifier
+            self.identifier = Identifier(identifier_checkpoint)
 
     def predict(self, image):
         with torch.inference_mode():
             probabilities = self.model(self.transform(image).unsqueeze(0).to("cuda")).softmax(1)[0].cpu().tolist()
-        return response(self.names, probabilities, self.version, self.abstention)
+        result = response(self.names, probabilities, self.version, self.abstention)
+        result['freshness_available'] = result['status'] == 'ok'
+        result['freshness_model_produce'] = result['produce']
+        if self.identifier is not None:
+            result = combine_predictions(result, self.identifier.predict(image))
+        else:
+            result['pipeline'] = '24-class-baseline'
+        return result
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("image", type=Path)
     parser.add_argument("--checkpoint", type=Path, default=Path("runs/mobilenetv3-finetuned/best.pt"))
+    parser.add_argument("--identifier-checkpoint", type=Path, default=Path("runs/identifier/best.pt"))
+    parser.add_argument("--baseline", action="store_true", help="Evaluate only the original 24-class classifier")
     args = parser.parse_args()
-    predictor = Predictor(args.checkpoint)
+    predictor = Predictor(args.checkpoint, None if args.baseline else args.identifier_checkpoint)
     with Image.open(args.image) as image:
         print(json.dumps(predictor.predict(image)))
 

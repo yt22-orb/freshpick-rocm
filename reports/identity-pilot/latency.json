@@ -1,0 +1,10 @@
+{
+  "n": 20,
+  "warmup_requests": 3,
+  "scope": "Sequential local multipart upload, decode, preprocessing, CNN and CLIP inference, JSON; excludes cold weights/download and WAN/camera/concurrent load",
+  "median_ms": 26.898412499576807,
+  "p95_ms": 34.55890579825791,
+  "min_ms": 22.383356001228094,
+  "max_ms": 37.333889998990344,
+  "identifier_version": "clip-vit-b32-b9d12fbf91aeda5d"
+}

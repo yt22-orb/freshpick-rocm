@@ -1,0 +1,426 @@
+{
+  "published_cnn_test": {
+    "n": 20,
+    "correct": 6,
+    "accuracy": 0.3,
+    "macro_f1": 0.26866883116883117,
+    "per_produce": {
+      "banana": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "bittermelon": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "eggplant": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "papaya": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 0.2222222222222222,
+        "recall": 1.0,
+        "f1-score": 0.36363636363636365,
+        "support": 2.0
+      },
+      "tomato": {
+        "precision": 0.25,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.2857142857142857,
+        "support": 3.0
+      },
+      "accuracy": 0.3,
+      "macro avg": {
+        "precision": 0.3090277777777778,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.26866883116883117,
+        "support": 20.0
+      },
+      "weighted avg": {
+        "precision": 0.30972222222222223,
+        "recall": 0.3,
+        "f1-score": 0.25422077922077924,
+        "support": 20.0
+      }
+    }
+  },
+  "published_cnn_regression": {
+    "n": 24,
+    "correct": 11,
+    "accuracy": 0.4583333333333333,
+    "macro_f1": 0.4056547619047619,
+    "per_produce": {
+      "banana": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "bittermelon": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "eggplant": {
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.4,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.6666666666666666,
+        "support": 3.0
+      },
+      "papaya": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 0.2727272727272727,
+        "recall": 1.0,
+        "f1-score": 0.42857142857142855,
+        "support": 3.0
+      },
+      "tomato": {
+        "precision": 0.6,
+        "recall": 1.0,
+        "f1-score": 0.75,
+        "support": 3.0
+      },
+      "accuracy": 0.4583333333333333,
+      "macro avg": {
+        "precision": 0.5049242424242424,
+        "recall": 0.4583333333333333,
+        "f1-score": 0.4056547619047619,
+        "support": 24.0
+      },
+      "weighted avg": {
+        "precision": 0.5049242424242424,
+        "recall": 0.4583333333333333,
+        "f1-score": 0.4056547619047619,
+        "support": 24.0
+      }
+    }
+  },
+  "optimized_cnn_test": {
+    "n": 20,
+    "correct": 6,
+    "accuracy": 0.3,
+    "macro_f1": 0.2722222222222222,
+    "per_produce": {
+      "banana": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1-score": 0.5,
+        "support": 2.0
+      },
+      "bittermelon": {
+        "precision": 0.3333333333333333,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.3333333333333333,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "eggplant": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "papaya": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 0.2857142857142857,
+        "recall": 1.0,
+        "f1-score": 0.4444444444444444,
+        "support": 2.0
+      },
+      "tomato": {
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.4,
+        "support": 3.0
+      },
+      "accuracy": 0.3,
+      "macro avg": {
+        "precision": 0.3273809523809524,
+        "recall": 0.3125,
+        "f1-score": 0.2722222222222222,
+        "support": 20.0
+      },
+      "weighted avg": {
+        "precision": 0.35357142857142854,
+        "recall": 0.3,
+        "f1-score": 0.27944444444444444,
+        "support": 20.0
+      }
+    }
+  },
+  "optimized_cnn_regression": {
+    "n": 24,
+    "correct": 8,
+    "accuracy": 0.3333333333333333,
+    "macro_f1": 0.3419642857142857,
+    "per_produce": {
+      "banana": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "bittermelon": {
+        "precision": 0.25,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.2857142857142857,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "eggplant": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.5,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "papaya": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 0.15384615384615385,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.25,
+        "support": 3.0
+      },
+      "tomato": {
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.4,
+        "support": 3.0
+      },
+      "accuracy": 0.3333333333333333,
+      "macro avg": {
+        "precision": 0.4879807692307692,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.3419642857142857,
+        "support": 24.0
+      },
+      "weighted avg": {
+        "precision": 0.4879807692307692,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.3419642857142857,
+        "support": 24.0
+      }
+    }
+  },
+  "separate_identifier_test": {
+    "n": 20,
+    "correct": 17,
+    "accuracy": 0.85,
+    "macro_f1": 0.8446428571428573,
+    "wilson95": [
+      0.6395811352592431,
+      0.9476312541037835
+    ],
+    "accepted": 19,
+    "per_produce": {
+      "banana": {
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1-score": 0.8,
+        "support": 2.0
+      },
+      "bittermelon": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1-score": 0.5,
+        "support": 2.0
+      },
+      "eggplant": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "papaya": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1-score": 0.8571428571428571,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "tomato": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "accuracy": 0.85,
+      "macro avg": {
+        "precision": 0.8645833333333333,
+        "recall": 0.8541666666666666,
+        "f1-score": 0.8446428571428573,
+        "support": 20.0
+      },
+      "weighted avg": {
+        "precision": 0.8791666666666667,
+        "recall": 0.85,
+        "f1-score": 0.8485714285714285,
+        "support": 20.0
+      }
+    }
+  },
+  "separate_identifier_regression": {
+    "n": 24,
+    "correct": 21,
+    "accuracy": 0.875,
+    "macro_f1": 0.8726190476190476,
+    "wilson95": [
+      0.6899611872949993,
+      0.9565566591987655
+    ],
+    "accepted": 24,
+    "per_produce": {
+      "banana": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "bittermelon": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "cucumber": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.6666666666666666,
+        "support": 3.0
+      },
+      "eggplant": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1-score": 0.8571428571428571,
+        "support": 3.0
+      },
+      "orange": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1-score": 0.8571428571428571,
+        "support": 3.0
+      },
+      "papaya": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 3.0
+      },
+      "pineapple": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "tomato": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "accuracy": 0.875,
+      "macro avg": {
+        "precision": 0.8958333333333333,
+        "recall": 0.875,
+        "f1-score": 0.8726190476190476,
+        "support": 24.0
+      },
+      "weighted avg": {
+        "precision": 0.8958333333333334,
+        "recall": 0.875,
+        "f1-score": 0.8726190476190476,
+        "support": 24.0
+      }
+    }
+  }
+}

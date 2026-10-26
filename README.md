@@ -63,7 +63,7 @@ The model uses MobileNetV3-Small with ImageNet pretrained weights by default; th
 Run inference after training:
 
 ```bash
-python -m freshpick.predict path/to/photo.jpg --checkpoint runs/mobilenetv3-finetuned/best.pt
+python -m freshpick.predict path/to/photo.jpg --checkpoint runs/mobilenetv3-finetuned/best.pt --identifier-checkpoint runs/identifier/best.pt
 ```
 
 This predicts one of the 24 inherited produce-and-freshness labels. The reported confidence is a model score, not a calibrated food-safety probability. Do not use it to decide whether food is safe to eat.
@@ -82,7 +82,7 @@ The repository contains code and documentation only. The source dataset remains 
 Install the API dependencies after installing the ROCm runtime:
 
 ```bash
-python -m pip install -e '.[api,test]'
+python -m pip install -e '.[api,identifier,test]'
 uvicorn freshpick.api:app --host 127.0.0.1 --port 8000
 curl -F 'file=@path/to/photo.jpg' http://127.0.0.1:8000/predict
 ```
@@ -103,8 +103,9 @@ with black padding to 224×224, and applies ImageNet normalization. Training add
 horizontal flips and rotations; evaluation and inference share preprocessing.
 
 Display `freshness_confidence` as “Freshness confidence” and use
-`freshness_probabilities` for the three bars. Scores are uncalibrated. No validated
-abstention threshold is present in the currently published v0.2.0 checkpoint. A
+`freshness_probabilities` for the three bars. Scores are uncalibrated. The v0.2.0 baseline has no validated
+abstention threshold. The new separate identifier has a small-pilot-calibrated
+supported-versus-unsupported similarity check; it is not general unknown recognition. A
 new checkpoint trained with `--ood-dir` stores its calibrated threshold and can
 return `status: "uncertain"`; this is rejection, not apple recognition. Shelf life,
 food safety, and explanations of specific image features are not model outputs.
@@ -121,7 +122,7 @@ The default UI/API checkpoint is distributed with [release v0.2.0](https://githu
 ```bash
 mkdir -p runs/mobilenetv3-finetuned
 gh release download v0.2.0 --repo yt22-orb/freshpick-rocm --pattern best.pt --pattern SHA256SUMS --dir runs/mobilenetv3-finetuned
-(cd runs/mobilenetv3-finetuned && sha256sum -c SHA256SUMS)
+(cd runs/mobilenetv3-finetuned && sha256sum --ignore-missing -c SHA256SUMS)
 .venv/bin/python -m uvicorn freshpick.api:app --host 127.0.0.1 --port 8000
 ```
 
@@ -143,5 +144,65 @@ variation, blur sensitivity, and confident errors limit general-use claims.
 Prioritize an independent item/session-grouped camera benchmark and better
 training coverage before more tuning or wider deployment. The [PDF report](reports/MODEL_EVALUATION.pdf), [standalone HTML report](reports/MODEL_EVALUATION.html),
 and [next implementation plan](reports/IMPROVEMENT_PLAN.md) are included. This
-branch preserves the audited `be31339` code; newer main-branch optimization changes
-are separate and are not covered by these measurements.
+historical audit measures `be31339`; later optimization and product work are
+covered by [implemented improvements](reports/IMPLEMENTED_IMPROVEMENTS.md).
+
+
+## Current local pilot: identification, confirmation and storage guidance
+
+The running pipeline uses a separate eight-class produce identifier and retains
+MobileNetV3-Small for the 24-class freshness diagnostics. On the new 20-image
+source-grouped web pilot, produce identification improved from 6/20 to 17/20;
+the original dataset produce accuracy is 99.74%. These small measurements do not
+establish general-use accuracy. The first text-only candidate and an augmented
+CNN were rejected; details and per-produce precision/recall/F1 are in
+[the implementation report](reports/IMPLEMENTED_IMPROVEMENTS.md).
+
+The UI shows produce and freshness scores separately. An uncertain identity,
+model disagreement or user correction withholds incompatible freshness output.
+Source-linked typical storage guidance asks the user to confirm the actual item
+and its storage conditions. It is general guidance, not predicted remaining days.
+See [storage guidance](reports/STORAGE_GUIDANCE.md).
+
+For a fresh checkout, download the two small pipeline checkpoints from the
+[v0.3.0 pilot release](https://github.com/yt22-orb/freshpick-rocm/releases/tag/v0.3.0-pilot):
+
+```bash
+python -m pip install -e '.[api,identifier]'
+mkdir -p runs/release-v0.3 runs/mobilenetv3-finetuned runs/identifier
+gh release download v0.3.0-pilot --repo yt22-orb/freshpick-rocm --pattern best.pt --pattern identifier.pt --pattern SHA256SUMS --dir runs/release-v0.3
+(cd runs/release-v0.3 && sha256sum -c SHA256SUMS)
+cp runs/release-v0.3/best.pt runs/mobilenetv3-finetuned/best.pt
+cp runs/release-v0.3/identifier.pt runs/identifier/best.pt
+python -m uvicorn freshpick.api:app --host 127.0.0.1 --port 8000
+```
+
+Open http://localhost:8000. The first identifier request downloads the pinned
+OpenCLIP encoder (about 600 MB) from Hugging Face, then processes images locally
+on ROCm. No uploaded photo is sent there. Encoder revision:
+`1a25a446712ba5ee05982a381eed697ef9b435cf`.
+`FRESHPICK_IDENTIFIER` overrides the identity-head checkpoint; set it to an empty
+string to deliberately run only the baseline. CLI `--baseline` evaluates the
+original 24-class pipeline without the separate identifier.
+
+Reproduce the identity experiment after preparing AgriFreshNET:
+
+```bash
+python -m pip install -e '.[identifier,evaluation]'
+python scripts/collect_identity_pilot.py
+python scripts/fetch_web_evaluation.py
+python -m freshpick.train --data-dir prepared_dataset --output-dir runs/mobilenetv3-optimized --init-checkpoint runs/mobilenetv3-finetuned/best.pt --epochs 15 --batch-size 32 --learning-rate 0.00005 --patience 5 --cosine --amp
+python scripts/train_identifier.py
+python scripts/compare_identity_pilot.py
+python scripts/report_product_update.py
+```
+
+The downloader uses the frozen manifests and SHA-256 records by default;
+`--discover` collects new candidates that require manual review and a new freeze.
+The archived audit commands reproduce historical joint-winner measurements;
+new comparisons must name the decision policy as well as the checkpoint.
+
+Browser verification requires `pip install -e '.[browser]'` and
+`python -m playwright install chromium`, then run
+`python scripts/verify_product_flows.py` with the server running. Physical-camera
+hardware and a future independent phone benchmark remain unverified.
