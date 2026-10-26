@@ -1,0 +1,21 @@
+:root {
+  --fp-primary: #FF7417;
+  --fp-primary-hover: #EB6311;
+  --fp-orange-soft: #FFB36D;
+  --fp-cream: #F4EFEA;
+  --fp-cream-light: #FBF8F5;
+  --fp-surface: #F9F5F1;
+  --fp-surface-subtle: #ECE5DE;
+  --fp-ink: #24262A;
+  --fp-muted: #77746F;
+  --fp-dark: #292522;
+  --fp-green: #248554;
+  --fp-yellow: #F4B943;
+  --fp-red: #E44840;
+  --fp-white: #FFFFFF;
+  --fp-font: Inter, "Plus Jakarta Sans", system-ui, sans-serif;
+  --fp-radius-card: 28px;
+  --fp-radius-pill: 999px;
+  --fp-radius-frame: 36px;
+  --fp-icon-size: 24px;
+}

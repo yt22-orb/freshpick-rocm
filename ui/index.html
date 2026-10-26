@@ -3,55 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3eee9" />
+    <meta name="theme-color" content="#F4EFEA" />
     <meta name="description" content="Check the visible condition of supported produce with FreshPick." />
     <title>FreshPick — Know your fruit</title>
-    <link rel="icon" href="assets/fruit.svg" type="image/svg+xml" />
+    <link rel="icon" href="assets/kit/brand/freshpick-app-icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="screen active" id="home-screen" aria-labelledby="home-title">
         <header class="topbar home-topbar">
-          <a class="wordmark" href="#home" data-screen="home" aria-label="FreshPick home"><span class="brand-dot"></span>FreshPick</a>
+          <a class="wordmark" href="#home" data-screen="home" aria-label="FreshPick home"><img src="assets/kit/brand/freshpick-mark.svg" alt="" />FreshPick</a>
           <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings">
-            <span class="info-icon" aria-hidden="true">i</span>
+            <span class="ui-icon icon-info" aria-hidden="true"></span>
           </button>
         </header>
         <div class="hero-fruit" aria-hidden="true">
-          <div class="fruit-orbit"><img src="assets/fruit.svg" alt="" /></div>
-          <div class="hero-caption"><span class="caption-dot"></span>Visible condition check</div>
+          <div class="fruit-orbit"><img src="assets/kit/illustrations/hero-apple.svg" alt="" /></div>
+          <div class="hero-caption"><span class="caption-dot"></span>Visible appearance check</div>
         </div>
         <div class="home-copy">
           <p class="eyebrow">A clearer look at your produce</p>
-          <h1 id="home-title">Know your fruit.<br />Choose wisely.</h1>
-          <p class="lede">Check the visible condition of supported fruit and vegetables. Experimental model; confirm its identification.</p>
-          <button class="primary-button" type="button" data-action="scan">Scan fruit <span class="arrow-disc" aria-hidden="true">→</span></button>
+          <h1 id="home-title">Know your fruit.<br />Choose <em>wisely.</em></h1>
+          <p class="lede">Check the visible appearance of supported produce. Confirm its identity for storage guidance.</p>
+          <button class="primary-button" type="button" data-action="scan"><span class="ui-icon icon-scan" aria-hidden="true"></span>Scan fruit <span class="arrow-disc" aria-hidden="true"><span class="ui-icon icon-arrow-right"></span></span></button>
         </div>
-        <section class="empty-history home-history" aria-label="Recent scans">
-          <div class="empty-mark" aria-hidden="true">+</div>
-          <div><strong>No scans yet</strong><span>Your latest result will appear here.</span></div>
-          <span class="small-arrow" aria-hidden="true">›</span>
-        </section>
+        <button class="empty-history home-history" type="button" data-action="view-history" aria-label="View recent scans">
+          <span class="empty-mark" aria-hidden="true"><span class="ui-icon icon-history"></span></span>
+          <span class="recent-copy"><strong>No scans yet</strong><span>Your latest result will appear here.</span></span>
+          <span class="ui-icon icon-chevron-right small-arrow" aria-hidden="true"></span>
+        </button>
         <p class="small-note">FreshPick checks visible appearance only. It cannot confirm internal quality or food safety.</p>
       </section>
 
       <section class="screen" id="scan-screen" aria-labelledby="scan-title">
         <header class="topbar centered-topbar">
-          <button class="icon-button" type="button" data-action="back-home" aria-label="Back to home">‹</button>
+          <button class="icon-button" type="button" data-action="back-home" aria-label="Back to home"><span class="ui-icon icon-back" aria-hidden="true"></span></button>
           <h1 id="scan-title">Scan fruit</h1>
-          <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings"><span class="info-icon" aria-hidden="true">i</span></button>
+          <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings"><span class="ui-icon icon-info" aria-hidden="true"></span></button>
         </header>
         <div class="segmented" role="tablist" aria-label="Choose image source">
-          <button class="segment selected" id="source-camera" role="tab" aria-selected="true" aria-controls="camera-panel" type="button" data-source="camera">Camera</button>
-          <button class="segment" id="source-gallery" role="tab" aria-selected="false" aria-controls="gallery-panel" tabindex="-1" type="button" data-source="gallery">Gallery</button>
+          <button class="segment selected" id="source-camera" role="tab" aria-selected="true" aria-controls="camera-panel" type="button" data-source="camera"><span class="ui-icon icon-camera" aria-hidden="true"></span>Camera</button>
+          <button class="segment" id="source-gallery" role="tab" aria-selected="false" aria-controls="gallery-panel" tabindex="-1" type="button" data-source="gallery"><span class="ui-icon icon-gallery" aria-hidden="true"></span>Gallery</button>
         </div>
         <input class="visually-hidden" id="gallery-input" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,.jpg,.jpeg,.png,.webp,.bmp" tabindex="-1" aria-label="Select an image to assess" />
         <div id="camera-panel" role="tabpanel" aria-labelledby="source-camera">
           <div class="camera-frame" id="camera-frame">
             <video id="camera-video" autoplay muted playsinline aria-label="Camera preview"></video>
             <div class="camera-placeholder" id="camera-placeholder">
-              <img src="assets/fruit.svg" alt="" />
+              <img src="assets/kit/illustrations/apple.svg" alt="" />
               <span>Center one supported fruit or vegetable in the frame</span>
               <button class="camera-start" id="camera-start" type="button" data-action="start-camera">Start camera</button>
             </div>
@@ -59,15 +59,15 @@
             <span class="frame-corner corner-bl"></span><span class="frame-corner corner-br"></span>
           </div>
           <div class="scan-controls">
-            <button class="icon-button secondary-control" type="button" data-action="flash" aria-label="Flash not available in this browser">⚡</button>
-            <button class="shutter-button" type="button" data-action="capture" aria-label="Capture photo" disabled><span></span></button>
-            <button class="icon-button secondary-control" type="button" data-action="switch-camera" aria-label="Switch camera" disabled>⟳</button>
+            <div class="scan-control"><button class="icon-button secondary-control" type="button" data-action="flash" aria-label="Flash not available in this browser" disabled><span class="ui-icon icon-flash-off" aria-hidden="true"></span></button><span>Flash unavailable</span></div>
+            <div class="scan-control"><button class="shutter-button" type="button" data-action="capture" aria-label="Capture photo" disabled><img src="assets/kit/illustrations/shutter-button.svg" alt="" /></button><span>Capture</span></div>
+            <div class="scan-control"><button class="icon-button secondary-control" type="button" data-action="switch-camera" aria-label="Switch camera" disabled><span class="ui-icon icon-switch-camera" aria-hidden="true"></span></button><span>Switch</span></div>
           </div>
-          <button class="text-button" type="button" data-action="select-gallery">Use Gallery instead</button>
+          <button class="text-button gallery-link" type="button" data-action="select-gallery"><span class="ui-icon icon-gallery" aria-hidden="true"></span>Choose from gallery</button>
         </div>
         <div id="gallery-panel" role="tabpanel" aria-labelledby="source-gallery" hidden>
           <div class="gallery-dropzone" id="gallery-dropzone" role="region" aria-labelledby="gallery-title" aria-describedby="gallery-help gallery-formats" tabindex="0">
-            <span class="gallery-upload-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 31V9m-8 8 8-8 8 8M10 29v8a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="gallery-upload-icon" aria-hidden="true"><span class="ui-icon icon-upload"></span></span>
             <h2 id="gallery-title">Drop your image here</h2>
             <p id="gallery-help">Drag and drop a photo, or choose one from your device.</p>
             <button class="gallery-choose" type="button" data-action="choose-gallery-file">Choose image</button>
@@ -77,14 +77,15 @@
         </div>
         <canvas class="visually-hidden" id="capture-canvas"></canvas>
         <p class="notice" id="scan-notice" role="status">Choose Camera or Gallery to begin.</p>
+        <p class="scan-tip"><strong>For best results:</strong> good lighting · clear focus · one item</p>
       </section>
 
       <section class="screen" id="evaluating-screen" aria-labelledby="evaluating-title">
         <header class="topbar">
-          <button class="icon-button" type="button" data-action="cancel-scan" aria-label="Cancel analysis">‹</button>
+          <button class="icon-button" type="button" data-action="cancel-scan" aria-label="Cancel analysis"><span class="ui-icon icon-back" aria-hidden="true"></span></button>
           <span class="header-spacer"></span>
         </header>
-        <div class="evaluation-visual" aria-hidden="true"><div class="loader-ring"><img id="evaluating-preview" src="assets/fruit.svg" alt="" /></div></div>
+        <div class="evaluation-visual" aria-hidden="true"><div class="loader-ring"><img id="evaluating-preview" src="assets/kit/illustrations/apple.svg" alt="" /></div></div>
         <div class="evaluation-copy">
           <p class="eyebrow">FreshPick assessment</p>
           <h1 id="evaluating-title">Taking a closer look</h1>
@@ -100,18 +101,18 @@
 
       <section class="screen" id="report-screen" aria-labelledby="report-title">
         <header class="topbar centered-topbar report-topbar">
-          <button class="icon-button" type="button" data-action="back-home" aria-label="Back to home">‹</button>
+          <button class="icon-button" type="button" data-action="back-home" aria-label="Back to home"><span class="ui-icon icon-back" aria-hidden="true"></span></button>
           <h1 id="report-title">Report</h1>
-          <button class="icon-button" type="button" data-action="export" aria-label="Export report">↥</button>
+          <button class="icon-button" type="button" data-action="export" aria-label="Export report"><span class="ui-icon icon-upload" aria-hidden="true"></span></button>
         </header>
         <div class="result-hero">
-          <div class="result-fruit"><img id="report-fruit" src="assets/fruit.svg" alt="" /></div>
+          <div class="result-fruit"><img id="report-fruit" src="assets/kit/illustrations/apple.svg" alt="" /></div>
           <span class="freshness-chip" id="report-status"><span aria-hidden="true">✓</span><span>Result pending</span></span>
           <h2 id="report-produce">No result yet</h2>
           <p class="scan-time" id="report-time">Run a scan to see a result</p>
         </div>
         <div class="report-card produce-confidence-card">
-          <span class="card-label" id="produce-confidence-label">Produce confidence</span>
+          <span class="card-label" id="produce-confidence-label">Identification confidence</span>
           <strong class="confidence-value" id="produce-confidence">—</strong>
           <span class="helper" id="produce-score-note">Model score for produce identity; confirm the item below.</span>
         </div>
@@ -160,7 +161,7 @@
           <p>This assessment uses visible appearance only. It cannot confirm internal quality, contamination, or food safety. Do not rely on this result alone to decide whether food is safe to eat.</p>
         </div>
         <button class="report-link" type="button" data-action="inspector">Model details <span>›</span></button>
-        <button class="primary-button compact-primary" type="button" data-action="scan">Scan another fruit <span class="arrow-disc" aria-hidden="true">→</span></button>
+        <button class="primary-button compact-primary" type="button" data-action="scan">Scan another fruit <span class="arrow-disc" aria-hidden="true"><span class="ui-icon icon-arrow-right"></span></span></button>
         <button class="text-button" type="button" data-action="export">Export report</button>
         <p class="small-note centered-note">Visible-condition assessment only.</p>
       </section>
@@ -169,7 +170,7 @@
         <div class="inspector-handle" aria-hidden="true"></div>
         <header class="inspector-heading">
           <div><h1 id="inspector-title">Inspector</h1><p>Technical assessment details</p></div>
-          <button class="icon-button" type="button" data-action="report" aria-label="Close inspector">×</button>
+          <button class="icon-button" type="button" data-action="report" aria-label="Close inspector"><span class="ui-icon icon-x" aria-hidden="true"></span></button>
         </header>
         <div class="segmented inspector-tabs" role="tablist" aria-label="Inspection details">
           <button class="segment selected" role="tab" aria-selected="true" type="button" data-inspector-tab="prediction">Prediction</button>
@@ -181,23 +182,30 @@
 
       <section class="screen" id="history-screen" aria-labelledby="history-title">
         <header class="topbar centered-topbar">
-          <span class="icon-spacer"></span><h1 id="history-title">Your scans</h1>
-          <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings"><span class="info-icon" aria-hidden="true">i</span></button>
+          <span class="icon-spacer"></span><h1 id="history-title">Insights</h1>
+          <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings"><span class="ui-icon icon-info" aria-hidden="true"></span></button>
         </header>
+        <p class="insights-intro">Your latest scans, saved on this device.</p>
+        <div class="insights-summary" aria-label="Saved scan summary">
+          <div><strong id="saved-scan-count">0</strong><span>Saved scans</span></div>
+          <div><strong id="confirmed-scan-count">0</strong><span>Labels confirmed</span></div>
+        </div>
+        <h2 class="history-heading">Recent scans</h2>
+        <p class="helper">Up to 12 scans. Identification scores describe model predictions, not produce quality.</p>
         <div id="history-list" class="history-list"></div>
-        <button class="primary-button history-cta" type="button" data-action="scan">Scan fruit <span class="arrow-disc" aria-hidden="true">→</span></button>
+        <button class="primary-button history-cta" type="button" data-action="scan"><span class="ui-icon icon-scan" aria-hidden="true"></span>Scan fruit <span class="arrow-disc" aria-hidden="true"><span class="ui-icon icon-arrow-right"></span></span></button>
       </section>
 
       <nav class="bottom-nav" aria-label="Main navigation">
-        <button class="nav-button active" type="button" data-screen="home" aria-label="Home"><span class="nav-home" aria-hidden="true">⌂</span></button>
-        <button class="nav-button" type="button" data-action="scan" aria-label="Scan fruit"><span class="nav-scan" aria-hidden="true">◎</span></button>
-        <button class="nav-button" type="button" data-screen="history" aria-label="Scan history"><span class="nav-clock" aria-hidden="true">◷</span></button>
+        <button class="nav-button active" type="button" data-screen="home" data-nav="home" aria-label="Home" aria-current="page"><span class="nav-icon"><span class="ui-icon icon-home" aria-hidden="true"></span></span><span>Home</span></button>
+        <button class="nav-button" type="button" data-action="scan" data-nav="scan" aria-label="Scan fruit"><span class="nav-icon"><span class="ui-icon icon-scan" aria-hidden="true"></span></span><span>Scan</span></button>
+        <button class="nav-button" type="button" data-screen="history" data-nav="history" aria-label="Insights"><span class="nav-icon"><span class="ui-icon icon-insights" aria-hidden="true"></span></span><span>Insights</span></button>
       </nav>
     </main>
 
     <dialog id="settings-dialog" class="settings-dialog">
       <form method="dialog" id="settings-form">
-        <div class="dialog-head"><div><p class="eyebrow">Connection</p><h2>Model endpoint</h2></div><button class="icon-button" value="cancel" aria-label="Close settings">×</button></div>
+        <div class="dialog-head"><div><p class="eyebrow">Connection</p><h2>Model endpoint</h2></div><button class="icon-button" value="cancel" aria-label="Close settings"><span class="ui-icon icon-x" aria-hidden="true"></span></button></div>
         <label for="endpoint-input">Prediction API URL</label>
         <input id="endpoint-input" type="url" placeholder="http://localhost:8000/predict" autocomplete="url" />
         <p class="helper">The API must accept an image as multipart form data and return the FreshPick response described in the repository prompt.</p>

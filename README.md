@@ -6,6 +6,10 @@ For the supplied FreshPick UI reference, use the [UI alignment prompt](UI_ALIGNM
 
 The responsive browser UI is in [`ui/`](ui/README.md) and is served together with the ROCm inference API. Run `.venv/bin/python -m uvicorn freshpick.api:app --host 127.0.0.1 --port 8000` and open http://localhost:8000. The UI uses the trained local checkpoint automatically.
 
+The supplied UI kit now provides the branding, artwork, icons and styling. See
+[UI kit integration](reports/UI_KIT_REFRESH.md) for the updated Home, Scan and
+Insights views and verification results.
+
 ## Dataset
 
 - **Source:** [AgriFreshNET Freshness and Shelf-Life Image Dataset, version 1](https://data.mendeley.com/datasets/42m5tb7yv9/1), DOI [10.17632/42m5tb7yv9.1](https://doi.org/10.17632/42m5tb7yv9.1), by Fouzia Risdin, Hafsha Salauddin, Tasniya aziza tufa, and Md Jakir Hossain. License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

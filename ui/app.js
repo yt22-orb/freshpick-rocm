@@ -53,7 +53,12 @@ function showScreen(name) {
   if (name !== 'scan') { stopCamera(); resetGalleryDrag(); }
   else syncSourceView();
   screens.forEach((screen) => screen.classList.toggle('active', screen.id === `${name}-screen`));
-  navButtons.forEach((button) => button.classList.toggle('active', button.dataset.screen === name));
+  navButtons.forEach((button) => {
+    const active = button.dataset.nav === name;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
   document.querySelector('.bottom-nav').hidden = !['home', 'history'].includes(name);
   if (name === 'inspector') renderInspector('prediction');
   if (name === 'history' || name === 'home') renderHistory();
@@ -67,6 +72,8 @@ function resetGalleryDrag() {
 function syncSourceView() {
   document.querySelector('#camera-panel').hidden = scanSource !== 'camera';
   document.querySelector('#gallery-panel').hidden = scanSource !== 'gallery';
+  if (scanSource === 'camera') cameraFrame.insertAdjacentElement('afterend', scanNotice);
+  else document.querySelector('#gallery-panel').append(scanNotice);
   document.querySelectorAll('[data-source]').forEach((button) => {
     const selected = button.dataset.source === scanSource;
     button.classList.toggle('selected', selected);
@@ -315,11 +322,11 @@ function renderReport(result) {
   const corrected = result.confirmedProduce && result.confirmedProduce !== result.produce;
   const freshnessAvailable = !uncertain && result.freshnessAvailable !== false && !corrected;
   const confidence = clamp(result.freshnessConfidence);
-  document.querySelector('#produce-confidence-label').textContent = corrected ? `Model’s ${produce} score` : 'Produce confidence';
+  document.querySelector('#produce-confidence-label').textContent = corrected ? `Model’s ${produce} score` : 'Identification confidence';
   document.querySelector('#produce-confidence').textContent = `${(clamp(result.produceConfidence) * 100).toFixed(1)}%`;
   document.querySelector('#produce-score-note').textContent = `Model candidate: ${produce}. ${result.confirmedProduce ? `User confirmed: ${produceLabels[result.confirmedProduce] || 'Other / unsure'}.` : 'Confirm or correct it below.'} A high score can still be wrong.`;
   const reportFruit = document.querySelector('#report-fruit');
-  reportFruit.src = result.imageUrl || 'assets/fruit.svg';
+  reportFruit.src = result.imageUrl || 'assets/kit/illustrations/apple.svg';
   reportFruit.alt = result.imageUrl ? 'Scanned produce' : '';
   reportFruit.closest('.result-fruit').classList.toggle('has-photo', Boolean(result.imageUrl));
   const reportStatus = document.querySelector('#report-status');
@@ -379,7 +386,7 @@ function renderInspector(tab) {
   }).join('');
   const classes = Object.entries(lastResult.classProbabilities).map(([key, value]) => ({ key, value: Number(value) }))
     .sort((a, b) => b.value - a.value).map(({ key, value }) => `<div class="prob-row"><div class="prob-head"><span>${escapeHtml(titleCase(key.replaceAll('_', ' ')))}</span><strong>${(clamp(value) * 100).toFixed(1)}%</strong></div><div class="bar-track"><span class="bar-fill" style="width:${clamp(value) * 100}%"></span></div></div>`).join('');
-  const thumb = lastResult.imageUrl ? escapeHtml(lastResult.imageUrl) : 'assets/fruit.svg';
+  const thumb = lastResult.imageUrl ? escapeHtml(lastResult.imageUrl) : 'assets/kit/illustrations/apple.svg';
   content.innerHTML = `<div class="inspector-image-row"><div class="mini-fruit"><img src="${thumb}" alt="" /></div><div><strong>Analyzed image</strong><span>${imageName}</span></div></div><section class="probability-card"><h2>Freshness probabilities</h2>${bars}<p class="helper">Raw summed scores from the 24-class freshness model. These are not a verified assessment when identity is uncertain or corrected, and are not food-safety probabilities.</p></section><details class="all-classes"><summary>All 24 class probabilities</summary><div class="class-list">${classes}</div></details>`;
 }
 
@@ -405,15 +412,33 @@ function historyIdentity(item) {
 }
 
 function historyTitle(item) { return item.confirmedProduce ? historyIdentity(item) : (item.status === 'uncertain' ? 'Uncertain result' : historyIdentity(item)); }
-function historyScoreLabel(item) { return item.produceConfidence === undefined ? 'Saved score' : 'Produce score'; }
+function historyScoreLabel(item) { return item.produceConfidence === undefined ? 'Saved score' : 'Identification score'; }
+
+function recentScanTitle(item) {
+  if (item.confirmedProduce) return `${produceLabels[item.confirmedProduce] || 'Other / unsure'} · Label confirmed`;
+  if (item.status === 'uncertain') return 'Uncertain identification';
+  return `${produceLabels[item.produce] || titleCase(item.produce)} · Not confirmed`;
+}
+
+function recentScanNote(item) {
+  if (item.confirmedProduce && item.confirmedProduce !== item.produce) {
+    return `Label corrected · model suggested ${produceLabels[item.produce] || titleCase(item.produce)}`;
+  }
+  const score = item.produceConfidence ?? item.confidence;
+  if (!Number.isFinite(score)) return 'Identification score unavailable';
+  const level = score >= 0.9 ? 'high' : score >= 0.7 ? 'moderate' : 'low';
+  return `Model confidence: ${level} · uncalibrated`;
+}
 
 function renderHistory() {
   const history = readHistory();
   const target = document.querySelector('#history-list');
   const recent = document.querySelector('.home-history');
+  document.querySelector('#saved-scan-count').textContent = history.length;
+  document.querySelector('#confirmed-scan-count').textContent = history.filter((item) => item.confirmedProduce).length;
   recent.innerHTML = history.length
-    ? `<div class="empty-mark" aria-hidden="true">${history[0].status === 'uncertain' ? '?' : '✓'}</div><div><strong>${escapeHtml(historyTitle(history[0]))}</strong><span>${historyScoreLabel(history[0])} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
-    : '<div class="empty-mark" aria-hidden="true">+</div><div><strong>No scans yet</strong><span>Your latest result will appear here.</span></div>';
+    ? `<span class="empty-mark" aria-hidden="true"><span class="ui-icon icon-${history[0].confirmedProduce ? 'check' : 'scan'}"></span></span><span class="recent-copy"><strong>${escapeHtml(recentScanTitle(history[0]))}</strong><span>${escapeHtml(recentScanNote(history[0]))}</span></span><span class="ui-icon icon-chevron-right small-arrow" aria-hidden="true"></span>`
+    : '<span class="empty-mark" aria-hidden="true"><span class="ui-icon icon-history"></span></span><span class="recent-copy"><strong>No scans yet</strong><span>Your latest result will appear here.</span></span><span class="ui-icon icon-chevron-right small-arrow" aria-hidden="true"></span>';
   if (!history.length) {
     target.innerHTML = '<div class="history-empty"><strong>No scans yet</strong>Your scan history will appear here on this device.</div>';
     return;
@@ -466,6 +491,7 @@ document.addEventListener('click', async (event) => {
   if (!action) return;
   if (action === 'scan') { showScreen('scan'); selectScanSource(scanSource, scanSource === 'camera'); return; }
   if (action === 'back-home') { showScreen('home'); return; }
+  if (action === 'view-history') { showScreen('history'); return; }
   if (action === 'report') { showScreen('report'); return; }
   if (action === 'inspector') { showScreen('inspector'); return; }
   if (action === 'select-gallery') { selectScanSource('gallery'); return; }

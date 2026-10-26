@@ -1,0 +1,54 @@
+{
+  "color": {
+    "primary": "#FF7417",
+    "primary_hover": "#EB6311",
+    "orange_soft": "#FFB36D",
+    "cream": "#F4EFEA",
+    "cream_light": "#FBF8F5",
+    "surface": "#F9F5F1",
+    "surface_subtle": "#ECE5DE",
+    "ink": "#24262A",
+    "muted": "#77746F",
+    "dark": "#292522",
+    "green": "#248554",
+    "yellow": "#F4B943",
+    "red": "#E44840",
+    "white": "#FFFFFF"
+  },
+  "font": {
+    "family": "Inter, Plus Jakarta Sans, system-ui, sans-serif",
+    "weights": [
+      400,
+      500,
+      600,
+      700,
+      800
+    ]
+  },
+  "radii": {
+    "card": 28,
+    "frame": 36,
+    "pill": 999,
+    "icon_button": 24
+  },
+  "spacing_px": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48
+  ],
+  "icon": {
+    "base_size": 24,
+    "stroke_width": 1.85,
+    "nav": 24,
+    "button": 22
+  },
+  "accessibility": {
+    "minimum_touch_target_px": 44
+  }
+}

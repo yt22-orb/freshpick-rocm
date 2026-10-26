@@ -1,6 +1,15 @@
 # FreshPick UI
 
-Responsive browser UI based on the five supplied FreshPick screen references. The original screenshots are kept in [`references/`](references/) for comparison; the running app does not load or display those screenshots.
+Responsive browser UI using the supplied `freshpick_ui_kit` refresh: apple branding,
+vector illustrations, consistent icons, cream/orange colors and labeled navigation.
+The original screenshots remain in [`references/`](references/) for comparison.
+The running app uses interactive HTML controls and individual SVG assets.
+
+The imported assets and exact design tokens are in [`assets/kit/`](assets/kit/).
+Home and Scan follow the kit; **Insights** opens saved scan history and counts on
+this device. The Home card distinguishes confirmed/corrected labels from the
+model's candidate. Confidence levels are uncalibrated classification scores.
+See [UI kit integration](../reports/UI_KIT_REFRESH.md) for scope and verification.
 
 ## Run locally
 
