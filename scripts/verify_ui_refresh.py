@@ -90,6 +90,25 @@ with sync_playwright() as tool:
             bounds = button.bounding_box()
             assert bounds['width'] >= 44 and bounds['height'] >= 44
     checks.append('Home, Gallery and Insights fit 320/390/768/1440px widths; navigation meets 44px tap targets')
+    for width in [320, 390, 522, 768, 1440]:
+        page.set_viewport_size({'width': width, 'height': 1383})
+        page.evaluate('() => { showScreen("scan"); selectScanSource("camera"); }')
+        tabs = page.locator('#scan-screen > .segmented').bounding_box()
+        frame = page.locator('#camera-frame').bounding_box()
+        assert abs(frame['x'] - tabs['x']) <= 1, (width, tabs, frame)
+        assert abs(frame['width'] - tabs['width']) <= 1, (width, tabs, frame)
+        assert abs(frame['x'] + frame['width'] / 2 - width / 2) <= 1, (width, frame)
+        shutter = page.locator('[data-action="capture"]').bounding_box()
+        assert abs(shutter['x'] + shutter['width'] / 2 - width / 2) <= 1, (width, shutter)
+        assert page.evaluate('document.documentElement.scrollHeight <= innerHeight + 1'), width
+        for screen in ['home', 'history']:
+            page.evaluate('(name) => showScreen(name)', screen)
+            assert page.evaluate('document.documentElement.scrollHeight <= innerHeight + 1'), (width, screen)
+    page.set_viewport_size({'width': 1440, 'height': 1383})
+    page.evaluate('() => { showScreen("scan"); selectScanSource("camera"); }')
+    page.wait_for_timeout(200)
+    page.screenshot(path=str(out / 'camera-centered-desktop.png'), full_page=True)
+    checks.append('Camera frame aligns with source tabs and viewport center, including its 405px height limit; short views have no extra page scroll on tall viewports')
     assert not failed_assets, failed_assets
     assert not errors, errors
     browser.close()

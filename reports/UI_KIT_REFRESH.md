@@ -54,6 +54,24 @@ real inference results. Existing product and scan-source checks also exercise
 the actual model service using the original evaluation banana image and a
 simulated browser camera. Physical camera hardware remains a manual check.
 
-All three browser scripts passed: five UI-refresh groups, nine scan-source groups
+All three browser scripts passed: six UI-refresh groups, nine scan-source groups
 and fourteen product-flow groups. No page JavaScript errors were reported. All
 54 automated tests passed, along with JavaScript syntax and whitespace checks.
+
+## Alignment follow-up
+
+The camera frame previously reached its 405px height limit and shrank to about
+352px wide inside the 390px content column. Its left edge stayed aligned with the
+tabs, which moved its center about 19px left. An explicit full width now keeps
+both edges aligned with the tabs. Equal control columns also center the shutter
+independently of the widths of the Flash and Switch labels.
+
+Removed the viewport-based minimum height from individual screens and reserve
+bottom navigation space only on Home and Insights. The shell retains its normal
+viewport minimum height; longer content still scrolls. This removes extra page
+overflow on tall desktop viewports without moving page headers vertically.
+
+Browser measurements cover camera/shutter centering at widths of
+320/390/522/768/1440px, and confirm short views fit a 1383px-tall viewport without
+extra page scrolling. The full product and scan-source checks passed after the
+screen sizing change.

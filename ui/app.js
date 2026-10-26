@@ -59,7 +59,9 @@ function showScreen(name) {
     if (active) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
-  document.querySelector('.bottom-nav').hidden = !['home', 'history'].includes(name);
+  const hasNavigation = ['home', 'history'].includes(name);
+  document.querySelector('.bottom-nav').hidden = !hasNavigation;
+  document.querySelector('.app-shell').classList.toggle('has-navigation', hasNavigation);
   if (name === 'inspector') renderInspector('prediction');
   if (name === 'history' || name === 'home') renderHistory();
   window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -24,8 +24,9 @@ body { margin: 0; min-height: 100vh; background: var(--paper); }
 button, input { font: inherit; }
 button { color: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #256b53; outline-offset: 3px; }
-.app-shell { position: relative; width: min(100%, 440px); min-height: 100svh; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 24px calc(112px + env(safe-area-inset-bottom)); overflow: hidden; }
-.screen { display: none; min-height: calc(100svh - 150px); animation: appear .22s ease-out; }
+.app-shell { position: relative; width: min(100%, 440px); min-height: 100svh; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom)); overflow: hidden; }
+.app-shell.has-navigation { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+.screen { display: none; min-width: 0; animation: appear .22s ease-out; }
 .screen.active { display: block; }
 @keyframes appear { from { opacity: .45; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -60,7 +61,7 @@ h1, h2, p { overflow-wrap: anywhere; }
 .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 24px 0 19px; padding: 5px; border-radius: var(--fp-radius-pill); background: #eae3dd; }
 .segment { display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; min-height: 44px; border-radius: var(--fp-radius-pill); background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; cursor: pointer; }
 .segment.selected { background: var(--orange); color: white; box-shadow: 0 3px 9px #fb711a25; }
-.camera-frame { position: relative; display: grid; place-items: center; aspect-ratio: .87; max-height: 405px; overflow: hidden; border-radius: var(--fp-radius-frame); background: radial-gradient(circle at 45% 42%, #39322d, #25211f 73%); }
+.camera-frame { position: relative; display: grid; place-items: center; width: 100%; min-width: 0; margin-inline: auto; aspect-ratio: .87; max-height: 405px; overflow: hidden; border-radius: var(--fp-radius-frame); background: radial-gradient(circle at 45% 42%, #39322d, #25211f 73%); }
 .camera-frame video { position: absolute; width: 100%; height: 100%; object-fit: cover; display: none; }
 .camera-frame.live video { display: block; }
 .camera-frame.live .camera-placeholder { display: none; }
@@ -74,7 +75,7 @@ h1, h2, p { overflow-wrap: anywhere; }
 .corner-br { right: 24px; bottom: 24px; border-width: 0 4px 4px 0; border-radius: 0 0 14px; }
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 .notice { min-height: 42px; margin: 15px 4px 8px; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.45; }
-.scan-controls { display: flex; align-items: end; justify-content: space-between; margin: 24px 18px 0; }
+.scan-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; justify-items: center; margin: 24px 18px 0; }
 .secondary-control { width: 44px; height: 44px; }
 .shutter-button { display: grid; place-items: center; width: 85px; height: 85px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
 .shutter-button img { display: block; width: 85px; height: 85px; }
