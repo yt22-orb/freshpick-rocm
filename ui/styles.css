@@ -218,3 +218,15 @@ h1, h2, p { overflow-wrap: anywhere; }
 .storage-timing > strong { display: block; font-size: 19px; line-height: 1.35; }
 .storage-timing.is-near { background: #fff0d6; border-color: #e8c48b; }
 .storage-timing.is-discard { background: #fae6df; border-color: #daaa9a; }
+
+.gallery-dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 390px; padding: 32px 22px; border: 2px dashed #c6b7aa; border-radius: 36px; background: #faf5ef; text-align: center; transition: border-color .15s, background .15s, box-shadow .15s; }
+.gallery-dropzone.is-dragging { border-color: var(--orange); background: #fff0df; box-shadow: inset 0 0 0 3px #f8751b24; }
+.gallery-dropzone:focus-visible { outline: 3px solid #256b53; outline-offset: 4px; }
+.gallery-upload-icon { display: grid; place-items: center; width: 86px; height: 86px; margin-bottom: 18px; border-radius: 50%; color: #b55314; background: #f8e5d1; }
+.gallery-upload-icon svg { width: 48px; height: 48px; }
+.gallery-dropzone h2 { margin: 0 0 12px; font: 800 26px/1.2 'Manrope', sans-serif; letter-spacing: -.6px; }
+.gallery-dropzone p { max-width: 290px; margin: 0 0 24px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.gallery-choose, .camera-start { padding: 14px 24px; border: 0; border-radius: 28px; background: var(--orange); color: var(--ink); font-weight: 700; cursor: pointer; }
+.gallery-dropzone .gallery-formats { margin: 22px 0 0; font-size: 12px; }
+.camera-start:disabled, .scan-controls button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 360px) { .gallery-dropzone { min-height: 350px; padding: 26px 16px; } .gallery-dropzone h2 { font-size: 23px; } }

@@ -10,6 +10,21 @@ Responsive browser UI based on the five supplied FreshPick screen references. Th
 
 Run from the repository root after installing `.[api]` and the ROCm runtime. Open `http://localhost:8000`. The built-in `/predict` endpoint is connected by default. Camera access works on localhost or a secure HTTPS origin. The user can select the inference API URL with the information button; the setting is stored in this browser only.
 
+## Camera and Gallery
+
+Camera requests browser permission, shows a live preview and enables capture once
+video is ready. Start/Retry controls and messages cover denied permission, missing
+devices and busy cameras. Switching to Gallery or leaving Scan stops camera tracks.
+
+Gallery opens an upload panel without launching the file picker. Drag one image
+into the dashed area or press **Choose image**. Camera, flash and shutter controls
+are hidden in this view. JPG, PNG, WebP and BMP files up to 20 MB are accepted;
+unsupported, empty or multiple files receive a visible message. Returning from an
+upload error or choosing another scan keeps Gallery selected.
+
+See [scan source verification](../reports/SCAN_SOURCE_UI.md) for browser checks and
+the physical-camera testing limitation.
+
 ## Connect model inference
 
 The UI sends `POST` to the configured endpoint as `multipart/form-data`, with the image in the `image` field. The response must follow the contract in [`../UI_ALIGNMENT_PROMPT.md`](../UI_ALIGNMENT_PROMPT.md), including the 24 joint-class probabilities and the three freshness probabilities. The built-in service shares the UI origin. A custom cross-origin inference service must allow requests from the UI origin through CORS.

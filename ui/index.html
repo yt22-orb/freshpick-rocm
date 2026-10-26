@@ -43,27 +43,40 @@
           <button class="icon-button" type="button" data-action="settings" aria-label="Inference settings"><span class="info-icon" aria-hidden="true">i</span></button>
         </header>
         <div class="segmented" role="tablist" aria-label="Choose image source">
-          <button class="segment selected" role="tab" aria-selected="true" type="button" data-source="camera">Camera</button>
-          <button class="segment" role="tab" aria-selected="false" type="button" data-source="gallery">Gallery</button>
+          <button class="segment selected" id="source-camera" role="tab" aria-selected="true" aria-controls="camera-panel" type="button" data-source="camera">Camera</button>
+          <button class="segment" id="source-gallery" role="tab" aria-selected="false" aria-controls="gallery-panel" tabindex="-1" type="button" data-source="gallery">Gallery</button>
         </div>
-        <input class="visually-hidden" id="gallery-input" type="file" accept="image/*" />
-        <div class="camera-frame" id="camera-frame">
-          <video id="camera-video" autoplay muted playsinline aria-label="Camera preview"></video>
-          <div class="camera-placeholder" id="camera-placeholder">
-            <img src="assets/fruit.svg" alt="" />
-            <span>Center one supported fruit or vegetable in the frame</span>
+        <input class="visually-hidden" id="gallery-input" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,.jpg,.jpeg,.png,.webp,.bmp" tabindex="-1" aria-label="Select an image to assess" />
+        <div id="camera-panel" role="tabpanel" aria-labelledby="source-camera">
+          <div class="camera-frame" id="camera-frame">
+            <video id="camera-video" autoplay muted playsinline aria-label="Camera preview"></video>
+            <div class="camera-placeholder" id="camera-placeholder">
+              <img src="assets/fruit.svg" alt="" />
+              <span>Center one supported fruit or vegetable in the frame</span>
+              <button class="camera-start" id="camera-start" type="button" data-action="start-camera">Start camera</button>
+            </div>
+            <span class="frame-corner corner-tl"></span><span class="frame-corner corner-tr"></span>
+            <span class="frame-corner corner-bl"></span><span class="frame-corner corner-br"></span>
           </div>
-          <span class="frame-corner corner-tl"></span><span class="frame-corner corner-tr"></span>
-          <span class="frame-corner corner-bl"></span><span class="frame-corner corner-br"></span>
+          <div class="scan-controls">
+            <button class="icon-button secondary-control" type="button" data-action="flash" aria-label="Flash not available in this browser">⚡</button>
+            <button class="shutter-button" type="button" data-action="capture" aria-label="Capture photo" disabled><span></span></button>
+            <button class="icon-button secondary-control" type="button" data-action="switch-camera" aria-label="Switch camera" disabled>⟳</button>
+          </div>
+          <button class="text-button" type="button" data-action="select-gallery">Use Gallery instead</button>
+        </div>
+        <div id="gallery-panel" role="tabpanel" aria-labelledby="source-gallery" hidden>
+          <div class="gallery-dropzone" id="gallery-dropzone" role="region" aria-labelledby="gallery-title" aria-describedby="gallery-help gallery-formats" tabindex="0">
+            <span class="gallery-upload-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 31V9m-8 8 8-8 8 8M10 29v8a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h2 id="gallery-title">Drop your image here</h2>
+            <p id="gallery-help">Drag and drop a photo, or choose one from your device.</p>
+            <button class="gallery-choose" type="button" data-action="choose-gallery-file">Choose image</button>
+            <p class="gallery-formats" id="gallery-formats">JPG, PNG, WebP or BMP · one image · up to 20 MB</p>
+          </div>
+          <p class="small-note">Use a clear photo of one supported fruit or vegetable.</p>
         </div>
         <canvas class="visually-hidden" id="capture-canvas"></canvas>
-        <p class="notice" id="scan-notice" role="status">Choose camera or gallery to begin. Supported: banana, bitter melon, cucumber, eggplant, orange, papaya, pineapple, tomato.</p>
-        <div class="scan-controls">
-          <button class="icon-button secondary-control" type="button" data-action="flash" aria-label="Flash not available in this browser">⚡</button>
-          <button class="shutter-button" type="button" data-action="capture" aria-label="Capture photo"><span></span></button>
-          <button class="icon-button secondary-control" type="button" data-action="switch-camera" aria-label="Switch camera">⟳</button>
-        </div>
-        <button class="text-button" type="button" data-action="select-gallery">Choose image from gallery</button>
+        <p class="notice" id="scan-notice" role="status">Choose Camera or Gallery to begin.</p>
       </section>
 
       <section class="screen" id="evaluating-screen" aria-labelledby="evaluating-title">

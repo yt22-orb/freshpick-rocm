@@ -7,6 +7,11 @@ const cameraVideo = document.querySelector('#camera-video');
 const cameraFrame = document.querySelector('#camera-frame');
 const scanNotice = document.querySelector('#scan-notice');
 const galleryInput = document.querySelector('#gallery-input');
+const galleryDropzone = document.querySelector('#gallery-dropzone');
+let scanSource = 'camera';
+let galleryDragDepth = 0;
+const supportedPhotoTypes = new Set(['image/jpeg','image/png','image/webp','image/bmp','image/x-ms-bmp']);
+const maximumPhotoBytes = 20 * 1024 * 1024;
 
 let cameraStream = null;
 let cameraGeneration = 0;
@@ -39,10 +44,14 @@ function stopCamera() {
   cameraStream = null;
   cameraFrame.classList.remove('live');
   cameraVideo.srcObject = null;
+  setCameraReady(false);
+  document.querySelector('#camera-start').disabled = false;
+  document.querySelector('#camera-start').textContent = 'Start camera';
 }
 
 function showScreen(name) {
-  if (name !== 'scan') stopCamera();
+  if (name !== 'scan') { stopCamera(); resetGalleryDrag(); }
+  else syncSourceView();
   screens.forEach((screen) => screen.classList.toggle('active', screen.id === `${name}-screen`));
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.screen === name));
   document.querySelector('.bottom-nav').hidden = !['home', 'history'].includes(name);
@@ -51,49 +60,111 @@ function showScreen(name) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function resetGalleryDrag() {
+  galleryDragDepth = 0;
+  galleryDropzone.classList.remove('is-dragging');
+}
+function syncSourceView() {
+  document.querySelector('#camera-panel').hidden = scanSource !== 'camera';
+  document.querySelector('#gallery-panel').hidden = scanSource !== 'gallery';
+  document.querySelectorAll('[data-source]').forEach((button) => {
+    const selected = button.dataset.source === scanSource;
+    button.classList.toggle('selected', selected);
+    button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+  });
+  scanNotice.textContent = scanSource === 'gallery'
+    ? 'Drop one image in the upload area or choose a photo from your device.'
+    : cameraStream ? 'Center one supported item in the frame, then capture.' : 'Allow camera access to take a photo, or use Gallery instead.';
+}
+function selectScanSource(source, startCamera = false) {
+  if (!['camera','gallery'].includes(source)) return;
+  if (source === 'gallery') stopCamera();
+  scanSource = source;
+  resetGalleryDrag();
+  syncSourceView();
+  if (source === 'camera' && startCamera) openCamera();
+}
+function setCameraReady(ready) {
+  document.querySelector('[data-action="capture"]').disabled = !ready;
+  document.querySelector('[data-action="switch-camera"]').disabled = !ready;
+}
+function uploadError(message) {
+  scanNotice.textContent = message;
+  showToast(message);
+}
 function useFile(file) {
-  storageController?.abort();
   if (!file) return;
-  if (!file.type.startsWith('image/')) {
-    showToast('Choose an image file to scan.');
-    return;
-  }
+  const supported = supportedPhotoTypes.has(file.type.toLowerCase()) || (!file.type && /\.(jpe?g|png|webp|bmp)$/i.test(file.name));
+  if (!supported) { uploadError('Choose a JPG, PNG, WebP or BMP image.'); return; }
+  if (file.size === 0) { uploadError('That image file is empty. Choose another photo.'); return; }
+  if (file.size > maximumPhotoBytes) { uploadError('That image is larger than 20 MB. Choose a smaller photo.'); return; }
+  storageController?.abort();
   if (activeImageUrl && activeImageUrl !== lastResult?.imageUrl) URL.revokeObjectURL(activeImageUrl);
   activeFile = file;
   activeImageUrl = URL.createObjectURL(file);
   document.querySelector('#evaluating-preview').src = activeImageUrl;
   submitImage(file);
 }
-
+function useGalleryFiles(files) {
+  selectScanSource('gallery');
+  if (files.length !== 1) { uploadError('Choose or drop one image at a time.'); return; }
+  useFile(files[0]);
+}
 async function openCamera() {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    scanNotice.textContent = 'Camera access is not available here. Choose an image from your gallery instead.';
+  if (scanSource !== 'camera' || !document.querySelector('#scan-screen').classList.contains('active')) return;
+  stopCamera();
+  if (!window.isSecureContext) {
+    scanNotice.textContent = 'Open FreshPick on localhost or HTTPS to use the camera. Gallery uploads are still available.';
     return;
   }
-  stopCamera();
+  if (!navigator.mediaDevices?.getUserMedia) {
+    scanNotice.textContent = 'Camera access is not available here. Choose an image from Gallery instead.';
+    return;
+  }
   const generation = cameraGeneration;
+  const startButton = document.querySelector('#camera-start');
+  startButton.disabled = true;
+  startButton.textContent = 'Opening camera…';
+  scanNotice.textContent = 'Allow camera access in your browser to see the live preview.';
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: cameraFacing }, audio: false,
-    });
-    if (generation !== cameraGeneration) {
+    const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: cameraFacing}}, audio: false});
+    if (generation !== cameraGeneration || scanSource !== 'camera' || !document.querySelector('#scan-screen').classList.contains('active')) {
       stream.getTracks().forEach((track) => track.stop());
       return;
     }
     cameraStream = stream;
+    stream.getVideoTracks().forEach((track) => track.addEventListener('ended', () => {
+      if (generation !== cameraGeneration) return;
+      stopCamera();
+      scanNotice.textContent = 'Camera access ended or the camera disconnected. Try again or choose Gallery.';
+      document.querySelector('#camera-start').textContent = 'Try camera again';
+    }));
     cameraVideo.srcObject = cameraStream;
+    await cameraVideo.play();
+    if (generation !== cameraGeneration) return;
     cameraFrame.classList.add('live');
+    setCameraReady(cameraVideo.videoWidth > 0);
     scanNotice.textContent = 'Center one supported fruit or vegetable in the frame, then capture.';
   } catch (error) {
     if (generation !== cameraGeneration) return;
-    scanNotice.textContent = error.name === 'NotAllowedError'
-      ? 'Camera permission was blocked. Allow camera access or choose an image from your gallery.'
-      : 'Could not open the camera. Choose an image from your gallery.';
+    stopCamera();
+    const messages = {
+      NotAllowedError: 'Camera permission was blocked. Allow camera access in your browser or device settings, then try again, or choose Gallery.',
+      NotFoundError: 'No camera was found. Connect a camera and try again, or choose Gallery.',
+      NotReadableError: 'The camera is busy or cannot be read. Close other apps using it and try again, or choose Gallery.',
+      SecurityError: 'Camera access is blocked here. Open the app on localhost or HTTPS, or use Gallery.',
+    };
+    scanNotice.textContent = messages[error.name] || 'Could not open the camera. Try again or choose an image from Gallery.';
+    document.querySelector('#camera-start').textContent = 'Try camera again';
   }
 }
+cameraVideo.addEventListener('loadeddata', () => {
+  setCameraReady(Boolean(cameraStream && scanSource === 'camera' && document.querySelector('#scan-screen').classList.contains('active') && cameraVideo.videoWidth));
+});
 
 function capturePhoto() {
-  if (!cameraStream || !cameraVideo.videoWidth) {
+  if (scanSource !== 'camera' || !cameraStream || !cameraVideo.videoWidth) {
     showToast('Start the camera or choose an image from your gallery.');
     return;
   }
@@ -390,23 +461,16 @@ document.addEventListener('click', async (event) => {
   const source = event.target.closest('[data-source]')?.dataset.source;
   const inspectorTab = event.target.closest('[data-inspector-tab]')?.dataset.inspectorTab;
   if (screen) return showScreen(screen);
-  if (source) {
-    document.querySelectorAll('[data-source]').forEach((button) => {
-      const selected = button.dataset.source === source;
-      button.classList.toggle('selected', selected);
-      button.setAttribute('aria-selected', String(selected));
-    });
-    if (source === 'gallery') { stopCamera(); galleryInput.click(); }
-    else openCamera();
-    return;
-  }
+  if (source) { selectScanSource(source, source === 'camera'); return; }
   if (inspectorTab) return renderInspector(inspectorTab);
   if (!action) return;
-  if (action === 'scan') { showScreen('scan'); openCamera(); return; }
+  if (action === 'scan') { showScreen('scan'); selectScanSource(scanSource, scanSource === 'camera'); return; }
   if (action === 'back-home') { showScreen('home'); return; }
   if (action === 'report') { showScreen('report'); return; }
   if (action === 'inspector') { showScreen('inspector'); return; }
-  if (action === 'select-gallery') { stopCamera(); galleryInput.click(); return; }
+  if (action === 'select-gallery') { selectScanSource('gallery'); return; }
+  if (action === 'choose-gallery-file') { galleryInput.click(); return; }
+  if (action === 'start-camera') { selectScanSource('camera', true); return; }
   if (action === 'capture') { capturePhoto(); return; }
   if (action === 'settings') {
     endpointInput.value = localStorage.getItem('freshpick-api-url') || defaultEndpoint;
@@ -430,9 +494,47 @@ document.addEventListener('click', async (event) => {
 });
 
 galleryInput.addEventListener('change', (event) => {
-  useFile(event.target.files?.[0]);
+  if (event.target.files?.length) useGalleryFiles([...event.target.files]);
   event.target.value = '';
 });
+
+// Keep tab switching separate from opening the operating system's file picker.
+document.querySelector('#source-camera').parentElement.addEventListener('keydown', (event) => {
+  if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+  event.preventDefault();
+  const source = event.key === 'Home' ? 'camera' : event.key === 'End' ? 'gallery' : scanSource === 'camera' ? 'gallery' : 'camera';
+  selectScanSource(source, source === 'camera');
+  document.querySelector(`[data-source="${source}"]`).focus();
+});
+galleryDropzone.addEventListener('keydown', (event) => {
+  if (event.target === galleryDropzone && ['Enter',' '].includes(event.key)) {
+    event.preventDefault(); galleryInput.click();
+  }
+});
+function draggedFiles(event) { return [...(event.dataTransfer?.types || [])].includes('Files'); }
+galleryDropzone.addEventListener('dragenter', (event) => {
+  event.preventDefault(); event.stopPropagation();
+  if (draggedFiles(event)) { galleryDragDepth++; galleryDropzone.classList.add('is-dragging'); }
+});
+galleryDropzone.addEventListener('dragover', (event) => {
+  event.preventDefault(); event.stopPropagation();
+  if (event.dataTransfer) event.dataTransfer.dropEffect = draggedFiles(event) ? 'copy' : 'none';
+});
+galleryDropzone.addEventListener('dragleave', (event) => {
+  event.preventDefault(); event.stopPropagation();
+  galleryDragDepth = Math.max(0, galleryDragDepth - 1);
+  if (galleryDragDepth === 0) galleryDropzone.classList.remove('is-dragging');
+});
+galleryDropzone.addEventListener('drop', (event) => {
+  event.preventDefault(); event.stopPropagation(); resetGalleryDrag();
+  if (scanSource !== 'gallery') return;
+  const files = [...(event.dataTransfer?.files || [])];
+  if (!files.length) { uploadError('Drop an image file here, rather than a link.'); return; }
+  useGalleryFiles(files);
+});
+// File drops outside the upload panel should never navigate away from the app.
+document.addEventListener('dragover', (event) => { if (draggedFiles(event)) event.preventDefault(); });
+document.addEventListener('drop', (event) => { if (draggedFiles(event)) event.preventDefault(); });
 
 document.querySelector('#settings-form').addEventListener('submit', (event) => {
   if (event.submitter?.id !== 'save-endpoint') return;
