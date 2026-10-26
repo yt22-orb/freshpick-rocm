@@ -9,12 +9,15 @@ const scanNotice = document.querySelector('#scan-notice');
 const galleryInput = document.querySelector('#gallery-input');
 
 let cameraStream = null;
+let cameraGeneration = 0;
 let activeFile = null;
 let activeImageUrl = null;
 let requestController = null;
 let lastResult = null;
 let toastTimer = null;
 let cameraFacing = 'environment';
+
+const defaultEndpoint = new URL('/predict', window.location.href).href;
 
 const stageLabels = { fresh: 'Fresh', semi_fresh: 'Semi-fresh', rotten: 'Rotten' };
 const produceLabels = {
@@ -31,6 +34,7 @@ function showToast(message) {
 }
 
 function stopCamera() {
+  cameraGeneration += 1;
   if (cameraStream) cameraStream.getTracks().forEach((track) => track.stop());
   cameraStream = null;
   cameraFrame.classList.remove('live');
@@ -43,7 +47,7 @@ function showScreen(name) {
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.screen === name));
   document.querySelector('.bottom-nav').hidden = !['home', 'history'].includes(name);
   if (name === 'inspector') renderInspector('prediction');
-  if (name === 'history') renderHistory();
+  if (name === 'history' || name === 'home') renderHistory();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -66,14 +70,21 @@ async function openCamera() {
     return;
   }
   stopCamera();
+  const generation = cameraGeneration;
   try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: cameraFacing }, audio: false,
     });
+    if (generation !== cameraGeneration) {
+      stream.getTracks().forEach((track) => track.stop());
+      return;
+    }
+    cameraStream = stream;
     cameraVideo.srcObject = cameraStream;
     cameraFrame.classList.add('live');
     scanNotice.textContent = 'Center one supported fruit or vegetable in the frame, then capture.';
   } catch (error) {
+    if (generation !== cameraGeneration) return;
     scanNotice.textContent = error.name === 'NotAllowedError'
       ? 'Camera permission was blocked. Allow camera access or choose an image from your gallery.'
       : 'Could not open the camera. Choose an image from your gallery.';
@@ -109,25 +120,26 @@ function setProgress(step) {
 }
 
 async function submitImage(file) {
-  const endpoint = localStorage.getItem('freshpick-api-url')?.trim();
-  if (!endpoint) {
-    scanNotice.textContent = 'Connect a trained model endpoint with the info button before scanning.';
-    showToast('No model endpoint is connected yet.');
-    return;
-  }
+  const endpoint = localStorage.getItem('freshpick-api-url')?.trim() || defaultEndpoint;
   showScreen('evaluating');
   setProgress(1);
-  requestController = new AbortController();
+  requestController?.abort();
+  const controller = new AbortController();
+  requestController = controller;
   const form = new FormData();
   form.append('image', file, file.name || 'freshpick-image');
   try {
     const pendingResponse = fetch(endpoint, {
-      method: 'POST', body: form, signal: requestController.signal,
+      method: 'POST', body: form, signal: controller.signal,
     });
     setProgress(2);
     const response = await pendingResponse;
-    if (!response.ok) throw new Error(`The model service returned ${response.status}.`);
+    if (!response.ok) {
+      const failure = await response.json().catch(() => ({}));
+      throw new Error(failure.detail || `The model service returned ${response.status}.`);
+    }
     const payload = await response.json();
+    if (controller.signal.aborted) return;
     const normalized = normalizeResult(payload);
     if (!['ok', 'uncertain'].includes(normalized.status)) throw new Error(payload.message || 'The model could not assess this image.');
     if (lastResult?.imageUrl && lastResult.imageUrl !== activeImageUrl) URL.revokeObjectURL(lastResult.imageUrl);
@@ -137,7 +149,7 @@ async function submitImage(file) {
     requestController = null;
     showScreen('report');
   } catch (error) {
-    requestController = null;
+    if (requestController === controller) requestController = null;
     if (error.name === 'AbortError') return;
     showScreen('scan');
     const reason = error instanceof TypeError
@@ -166,6 +178,9 @@ function normalizeResult(payload) {
   if (rows.some((row) => !row.produce || !supported.has(row.produce) || !row.freshness)) {
     throw new Error('The model returned an unsupported class label.');
   }
+  if (new Set(rows.map((row) => `${row.freshness}_${row.produce}`)).size !== 24) {
+    throw new Error('The model returned duplicate class labels.');
+  }
   const winner = rows.reduce((best, row) => row.value > best.value ? row : best, rows[0]);
   if (!winner?.produce || !winner?.freshness) throw new Error('The model returned an unsupported class label.');
   const freshnessProbabilities = { fresh: 0, semi_fresh: 0, rotten: 0 };
@@ -175,10 +190,10 @@ function normalizeResult(payload) {
   const total = Object.values(freshnessProbabilities).reduce((sum, value) => sum + value, 0);
   if (!(total > 0)) throw new Error('The model returned no usable freshness probabilities.');
   Object.keys(freshnessProbabilities).forEach((key) => { freshnessProbabilities[key] /= total; });
-  const predictedFreshness = payload.freshness || winner.freshness;
-  const predictedProduce = payload.produce || winner.produce;
-  const freshnessConfidence = Number(payload.freshness_confidence ?? freshnessProbabilities[predictedFreshness]);
-  const classConfidence = Number(payload.class_confidence ?? winner.value);
+  const predictedFreshness = winner.freshness;
+  const predictedProduce = winner.produce;
+  const freshnessConfidence = freshnessProbabilities[predictedFreshness];
+  const classConfidence = winner.value;
   if (![freshnessConfidence, classConfidence].every((value) => Number.isFinite(value) && value >= 0 && value <= 1)) {
     throw new Error('The model returned an invalid confidence score.');
   }
@@ -192,7 +207,7 @@ function normalizeResult(payload) {
 
 function parseClassName(name) {
   const match = /^(fresh|rotten|semi_fresh)_(.+)$/.exec(name);
-  return match ? { freshness: match[1], produce: match[2] } : {};
+  return match ? { freshness: match[1], produce: match[2].replace(/[ _]/g, '').toLowerCase() } : {};
 }
 
 function renderReport(result) {
@@ -258,13 +273,17 @@ function saveHistory(result) {
 }
 
 function readHistory() {
-  try { return JSON.parse(localStorage.getItem('freshpick-history') || '[]'); }
+  try { const items = JSON.parse(localStorage.getItem('freshpick-history') || '[]'); return Array.isArray(items) ? items : []; }
   catch { return []; }
 }
 
 function renderHistory() {
   const history = readHistory();
   const target = document.querySelector('#history-list');
+  const recent = document.querySelector('.home-history');
+  recent.innerHTML = history.length
+    ? `<div class="empty-mark" aria-hidden="true">✓</div><div><strong>${escapeHtml(produceLabels[history[0].produce] || titleCase(history[0].produce))}</strong><span>${history[0].status === 'uncertain' ? 'Uncertain' : (stageLabels[history[0].freshness] || 'Uncertain')} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
+    : '<div class="empty-mark" aria-hidden="true">+</div><div><strong>No scans yet</strong><span>Your latest result will appear here.</span></div>';
   if (!history.length) {
     target.innerHTML = '<div class="history-empty"><strong>No scans yet</strong>Your scan history will appear here on this device.</div>';
     return;
@@ -323,7 +342,7 @@ document.addEventListener('click', async (event) => {
   if (action === 'select-gallery') { stopCamera(); galleryInput.click(); return; }
   if (action === 'capture') { capturePhoto(); return; }
   if (action === 'settings') {
-    endpointInput.value = localStorage.getItem('freshpick-api-url') || '';
+    endpointInput.value = localStorage.getItem('freshpick-api-url') || defaultEndpoint;
     settingsDialog.showModal();
     return;
   }
@@ -355,7 +374,7 @@ document.querySelector('#settings-form').addEventListener('submit', (event) => {
   if (!value) {
     localStorage.removeItem('freshpick-api-url');
     settingsDialog.close();
-    showToast('Model endpoint disconnected.');
+    showToast('Using the built-in model endpoint.');
     return;
   }
   try {
@@ -370,3 +389,5 @@ document.querySelector('#settings-form').addEventListener('submit', (event) => {
 });
 
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopCamera(); });
+
+renderHistory();

@@ -1,0 +1,23 @@
+{
+  "http_status": 200,
+  "model_version": "mobilenetv3-small-a9e3a06213d9c244",
+  "class_count": 24,
+  "freshness_probability_sum": 1.0,
+  "browser_checks": {
+    "checks": [
+      "Mobile Home \u2192 Scan and simulated browser camera preview",
+      "Gallery upload \u2192 Evaluating \u2192 real ROCm response \u2192 Report; confidence matches API",
+      "Inspector freshness totals, 24 joint classes, model version, unavailable diagnostics",
+      "Report export and persistent real scan history on Home and History",
+      "Simulated camera capture \u2192 real ROCm inference \u2192 Report",
+      "Actual invalid-image API error shown in Scan",
+      "Simulated server error shown without fabricated result",
+      "Simulated uncertain response presentation; no validated threshold claimed",
+      "Cancel pending inference returns to Scan",
+      "Home, Scan, Report, Inspector: no horizontal overflow at 320/390/768/1440 px",
+      "Unavailable camera provides gallery fallback",
+      "Simulated camera permission denial provides gallery fallback"
+    ],
+    "javascript_errors": []
+  }
+}

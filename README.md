@@ -1,10 +1,10 @@
 # FreshPick ROCm training
 
-Code to prepare AgriFreshNET images and train a 24-class produce freshness classifier on an AMD GPU with ROCm. **No model has been trained for this repository yet.** Training results must come from a run on the gaming PC.
+Code to prepare AgriFreshNET images and train a 24-class produce freshness classifier on an AMD GPU with ROCm. **Training completed on the local RX 7800 XT using ROCm.** Fine-tuned test accuracy is 96.65% and macro F1 is 0.9626. See [fine-tuning results](reports/FINETUNING_RESULTS.md) for the original-versus-fine-tuned comparison. See [measured training results](reports/TRAINING_RESULTS.md) for configuration, artifacts, verification, and random-split limitations.
 
 For the supplied FreshPick UI reference, use the [UI alignment prompt](UI_ALIGNMENT_PROMPT.md). It defines the supported produce labels, inference response shape, and UI behavior expected from the model integration.
 
-The responsive browser UI is in [`ui/`](ui/README.md). Run it locally with `python3 -m http.server 8080 --directory ui`. The UI needs a compatible inference API and trained checkpoint before it can return real scan results; the API is not included yet.
+The responsive browser UI is in [`ui/`](ui/README.md) and is served together with the ROCm inference API. Run `.venv/bin/python -m uvicorn freshpick.api:app --host 127.0.0.1 --port 8000` and open http://localhost:8000. The UI uses the trained local checkpoint automatically.
 
 ## Dataset
 
@@ -46,7 +46,7 @@ The model uses MobileNetV3-Small with ImageNet pretrained weights by default; th
 Run inference after training:
 
 ```bash
-python -m freshpick.predict path/to/photo.jpg --checkpoint runs/mobilenetv3-small/best.pt
+python -m freshpick.predict path/to/photo.jpg --checkpoint runs/mobilenetv3-finetuned/best.pt
 ```
 
 This predicts one of the 24 inherited produce-and-freshness labels. The reported confidence is a model score, not a calibrated food-safety probability. Do not use it to decide whether food is safe to eat.
@@ -59,3 +59,55 @@ python -m pytest -q
 ```
 
 The repository contains code and documentation only. The source dataset remains at Mendeley Data; no dataset images or ZIP files are committed here.
+
+## FreshPick inference API
+
+Install the API dependencies after installing the ROCm runtime:
+
+```bash
+python -m pip install -e '.[api,test]'
+uvicorn freshpick.api:app --host 127.0.0.1 --port 8000
+curl -F 'file=@path/to/photo.jpg' http://127.0.0.1:8000/predict
+```
+
+Set `FRESHPICK_CHECKPOINT` to override `runs/mobilenetv3-finetuned/best.pt`.
+Interactive endpoint documentation is at `/docs`. `POST /predict` accepts a
+multipart `image` (or the CLI-adapter-compatible `file` field) (JPEG, PNG, WebP, or BMP, maximum 20 MiB). It returns the contract
+in `UI_ALIGNMENT_PROMPT.md`, including all 24 joint probabilities, three summed
+freshness probabilities, the joint winner, and a checkpoint SHA-256 based model
+version. Inference requires an available AMD GPU and ROCm PyTorch. Images are
+processed in memory and are not saved as scan history by this adapter.
+
+Errors: 400 for unreadable images, 413 for oversized uploads, 415 for unsupported
+image formats, 422 for missing input, and 503 for unavailable weights/runtime or
+failed inference. Missing weights never produce a successful prediction.
+Preprocessing handles EXIF orientation, converts to RGB, preserves aspect ratio
+with black padding to 224×224, and applies ImageNet normalization. Training adds
+horizontal flips and rotations; evaluation and inference share preprocessing.
+
+Display `freshness_confidence` as “Freshness confidence” and use
+`freshness_probabilities` for the three bars. Scores are uncalibrated. No validated
+abstention threshold or unsupported-item detector is provided: an apple can still
+receive a supported class label. Shelf life, food safety, and explanations of
+specific image features are not model outputs.
+
+The UI and model API share one origin; no endpoint configuration or CORS setup is
+needed for local use. The information button permits an optional custom endpoint.
+See [UI verification](reports/UI_VERIFICATION.md) for tested flows and remaining limits.
+
+
+## Download the trained model
+
+The default UI/API checkpoint is distributed with [release v0.2.0](https://github.com/yt22-orb/freshpick-rocm/releases/tag/v0.2.0), rather than committed to Git.
+
+```bash
+mkdir -p runs/mobilenetv3-finetuned
+gh release download v0.2.0 --repo yt22-orb/freshpick-rocm --pattern best.pt --pattern SHA256SUMS --dir runs/mobilenetv3-finetuned
+(cd runs/mobilenetv3-finetuned && sha256sum -c SHA256SUMS)
+.venv/bin/python -m uvicorn freshpick.api:app --host 127.0.0.1 --port 8000
+```
+
+Open http://localhost:8000. To fine-tune your own checkpoint, use the command in
+[the fine-tuning report](reports/FINETUNING_RESULTS.md), adjusting `--init-checkpoint`
+and keeping a separate output directory. The original class order and split digest
+must match. A new optimizer is used; this is weight initialization, not exact optimizer-state resumption.

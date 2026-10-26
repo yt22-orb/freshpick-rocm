@@ -1,0 +1,202 @@
+{
+  "test": {
+    "loss": 0.09878619696029212,
+    "accuracy": 0.9665379665379665,
+    "macro_f1": 0.9626232215858425
+  },
+  "per_class": {
+    "fresh_banana": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 26.0
+    },
+    "fresh_bittermelon": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 29.0
+    },
+    "fresh_cucumber": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 21.0
+    },
+    "fresh_eggplant": {
+      "precision": 0.8536585365853658,
+      "recall": 1.0,
+      "f1-score": 0.9210526315789473,
+      "support": 35.0
+    },
+    "fresh_orange": {
+      "precision": 0.972972972972973,
+      "recall": 1.0,
+      "f1-score": 0.9863013698630136,
+      "support": 36.0
+    },
+    "fresh_papaya": {
+      "precision": 0.9444444444444444,
+      "recall": 0.9444444444444444,
+      "f1-score": 0.9444444444444444,
+      "support": 18.0
+    },
+    "fresh_pineapple": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 33.0
+    },
+    "fresh_tomato": {
+      "precision": 0.9651162790697675,
+      "recall": 0.9325842696629213,
+      "f1-score": 0.9485714285714286,
+      "support": 89.0
+    },
+    "rotten_banana": {
+      "precision": 1.0,
+      "recall": 0.9777777777777777,
+      "f1-score": 0.9887640449438202,
+      "support": 45.0
+    },
+    "rotten_bittermelon": {
+      "precision": 0.9411764705882353,
+      "recall": 1.0,
+      "f1-score": 0.9696969696969697,
+      "support": 32.0
+    },
+    "rotten_cucumber": {
+      "precision": 1.0,
+      "recall": 0.8571428571428571,
+      "f1-score": 0.9230769230769231,
+      "support": 7.0
+    },
+    "rotten_eggplant": {
+      "precision": 0.9523809523809523,
+      "recall": 0.8695652173913043,
+      "f1-score": 0.9090909090909091,
+      "support": 23.0
+    },
+    "rotten_orange": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 17.0
+    },
+    "rotten_papaya": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 50.0
+    },
+    "rotten_pineapple": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 32.0
+    },
+    "rotten_tomato": {
+      "precision": 0.972972972972973,
+      "recall": 0.972972972972973,
+      "f1-score": 0.972972972972973,
+      "support": 37.0
+    },
+    "semi_fresh_banana": {
+      "precision": 0.9666666666666667,
+      "recall": 1.0,
+      "f1-score": 0.9830508474576272,
+      "support": 29.0
+    },
+    "semi_fresh_bittermelon": {
+      "precision": 1.0,
+      "recall": 0.8823529411764706,
+      "f1-score": 0.9375,
+      "support": 17.0
+    },
+    "semi_fresh_cucumber": {
+      "precision": 0.9714285714285714,
+      "recall": 1.0,
+      "f1-score": 0.9855072463768116,
+      "support": 34.0
+    },
+    "semi_fresh_eggplant": {
+      "precision": 0.9117647058823529,
+      "recall": 0.8157894736842105,
+      "f1-score": 0.8611111111111112,
+      "support": 38.0
+    },
+    "semi_fresh_orange": {
+      "precision": 1.0,
+      "recall": 0.9833333333333333,
+      "f1-score": 0.9915966386554622,
+      "support": 60.0
+    },
+    "semi_fresh_papaya": {
+      "precision": 0.8571428571428571,
+      "recall": 0.8571428571428571,
+      "f1-score": 0.8571428571428571,
+      "support": 7.0
+    },
+    "semi_fresh_pineapple": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 18.0
+    },
+    "semi_fresh_tomato": {
+      "precision": 0.8936170212765957,
+      "recall": 0.9545454545454546,
+      "f1-score": 0.9230769230769231,
+      "support": 44.0
+    },
+    "accuracy": 0.9665379665379665,
+    "macro avg": {
+      "precision": 0.9668059354754899,
+      "recall": 0.9603188166364417,
+      "f1-score": 0.9626232215858425,
+      "support": 777.0
+    },
+    "weighted avg": {
+      "precision": 0.9676331353023345,
+      "recall": 0.9665379665379665,
+      "f1-score": 0.9663429718103094,
+      "support": 777.0
+    }
+  },
+  "best_epoch": 1,
+  "split_sha256": "97a36346183f44b03205bd884896f7fd072635727d67eaac3c45fed3e81e30d8",
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "torch": "2.11.0+rocm7.2",
+    "hip": "7.2.26015",
+    "gpu": "AMD Radeon RX 7800 XT",
+    "seed": 42
+  },
+  "validation": {
+    "loss": 0.09185652358015788,
+    "accuracy": 0.9742268041237113,
+    "macro_f1": 0.9711469963747693
+  },
+  "baseline_validation": {
+    "loss": 0.12190431202809836,
+    "accuracy": 0.961340206185567,
+    "macro_f1": 0.9546648593532705
+  },
+  "parent_sha256": "7e1ee2803754f3ca324371b4be8911c2aa52e3b8ad2658006e6ec02229537746",
+  "epochs_completed": 6,
+  "configuration": {
+    "data_dir": "prepared_dataset",
+    "output_dir": "runs/mobilenetv3-finetuned",
+    "epochs": 15,
+    "batch_size": 32,
+    "learning_rate": 3e-05,
+    "workers": 4,
+    "seed": 42,
+    "patience": 5,
+    "init_checkpoint": "runs/mobilenetv3-small/best.pt",
+    "cosine": true,
+    "no_pretrained": false,
+    "amp": true
+  }
+}
