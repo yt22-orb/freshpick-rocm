@@ -50,3 +50,59 @@ def test_photo_suggestions_are_not_recorded_as_user_observations():
     advice=storage_guidance(StorageRequest(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',observation_source='photo_model'))
     assert advice['inputs']['observation_source']=='photo_model'
     assert any('conditional' in text and 'suggestions' in text for text in advice['assumptions'])
+
+
+@pytest.mark.parametrize('days,state,action,remaining',[  # exact and fractional boundaries
+    (0,'within_window','check_before_use',{'min':3.0,'max':3.0}),
+    (1,'within_window','check_before_use',{'min':2.0,'max':2.0}),
+    (2,'near_limit','use_promptly',{'min':1.0,'max':1.0}),
+    (2.5,'near_limit','use_promptly',{'min':.5,'max':.5}),
+    (3,'at_limit','discard',{'min':0.0,'max':0.0}),
+    (4,'past_limit','discard',{'min':0.0,'max':0.0}),
+])
+def test_reference_countdown_and_conservative_cutoff(days,state,action,remaining):
+    data=StorageRequest(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',days_stored=days)
+    timing=storage_guidance(data)['timing']
+    assert timing['state']==state and timing['action']==action
+    assert timing['reference_days_left']==remaining
+    assert timing['policy']=='conservative_discard_at_reference_maximum'
+    assert 'not guaranteed safe time' in timing['caveat']
+
+
+def test_range_retains_both_endpoints_and_does_not_promise_maximum():
+    data=StorageRequest(produce='bittermelon',confirmed=True,condition='whole',ripeness='unknown',location='refrigerator',spoilage='no',days_stored=2)
+    timing=storage_guidance(data)['timing']
+    assert timing['reference_days_left']=={'min':1.0,'max':3.0}
+    assert '1–3 days' in timing['heading']
+    timing=storage_guidance(data.model_copy(update={'days_stored':4}))['timing']
+    assert timing['state']=='near_limit' and timing['reference_days_left']=={'min':0.0,'max':1.0}
+
+
+@pytest.mark.parametrize('overrides,state,action',[
+    ({'spoilage':'yes'},'discard','discard'),
+    ({'spoilage':'unknown'},'inspect_first','inspect'),
+    ({'confirmed':False},'unavailable','provide_details'),
+    ({'condition':'unknown'},'unavailable','provide_details'),
+    ({'days_stored':None},'age_needed','provide_days'),
+])
+def test_incomplete_details_and_spoilage_override_positive_time(overrides,state,action):
+    base=dict(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',days_stored=0)
+    timing=storage_guidance(StorageRequest(**(base|overrides)))['timing']
+    assert timing['state']==state and timing['action']==action
+    assert timing['reference_days_left'] is None
+    assert 'You still have' not in timing['heading']
+
+
+@pytest.mark.parametrize('days,action',[(0,'refrigerate_now'),(1/24,'refrigerate_now'),(2/24,'discard'),(.1,'discard')])
+def test_cut_counter_exposure_never_returns_safe_remaining_time(days,action):
+    data=StorageRequest(produce='tomato',confirmed=True,condition='cut',ripeness='ripe',location='counter',spoilage='no',days_stored=days)
+    advice=storage_guidance(data)
+    assert advice['timing']['action']==action
+    assert advice['timing']['reference_days_left'] is None
+    assert advice['typical_window_days'] is None
+    assert any(source['url'].startswith('https://www.fda.gov/') for source in advice['sources'])
+
+
+def test_photo_inference_is_an_explicit_timing_assumption():
+    advice=storage_guidance(StorageRequest(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',days_stored=1,observation_source='photo_model'))
+    assert advice['timing']['details_are_photo_suggestions'] is True

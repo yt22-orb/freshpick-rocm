@@ -96,3 +96,15 @@ pre-fill an optional details editor. Unknown condition stays unknown and blocks
 numeric guidance. Corrected produce selects its own photo proposals. Do not copy
 a previous produce's ripeness or convert Fresh into ripe. Storage requests include
 `observation_source` to distinguish model suggestions from user edits.
+
+
+## Reference-window timing extension
+
+`storage-guidance.timing` compares reported elapsed age with a matching source-backed
+reference range. Preserve both endpoints, clamp negatives to zero, and distinguish
+within_window, near_limit, at_limit, past_limit and unavailable/age-needed states.
+At/past the upper endpoint the app recommends discard as an explicit conservative
+policy, not a proven expiry. “You still have” must say within the typical window,
+never safe time guaranteed. Spoilage and unsafe handling override positive time.
+Persist/export the entered-age snapshot, its caveat and calculated_at. Editing inputs
+invalidates stale timing; rescanning must not reset elapsed age.

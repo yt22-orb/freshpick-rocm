@@ -221,3 +221,13 @@ See [photo-observation results and limitations](reports/PHOTO_OBSERVATIONS.md).
 Freshness confidence remains unavailable when the identity and freshness models
 disagree; the card now explains which produce each model identified. Confirming
 an identity or seeing a ripe-looking suggestion does not validate freshness.
+
+
+## Storage-window status
+
+Enter days already stored to see a reference-window estimate, near-limit notice,
+or a conservative discard recommendation at/past the cited maximum. This is
+rule-based arithmetic, not a model prediction of biological shelf life or a safety
+guarantee. Spoilage and unsafe handling override positive estimates. Missing age
+or unsupported conditions show no invented countdown. See
+[storage timing](reports/STORAGE_TIMING.md) for the rules, examples and verification.

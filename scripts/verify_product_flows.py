@@ -43,6 +43,24 @@ with sync_playwright() as tool:
  expect(page.locator('#storage-result')).to_contain_text('does not restart today')
  expect(page.locator('#storage-result a')).to_have_count(1)
  checks.append('Yes-confirmed banana with automatic whole/ripe-looking suggestions + refrigerator returns a source-linked three-day typical window with elapsed-age caveat')
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','within_window')
+ expect(page.locator('.storage-timing')).to_contain_text('You still have about 2 days within the typical storage window')
+ expect(page.locator('.storage-timing')).to_contain_text('not guaranteed safe time')
+ for days,state in [('2','near_limit'),('3','at_limit'),('4','past_limit')]:
+  page.locator('#days-stored').fill(days)
+  expect(page.locator('.storage-timing')).to_have_count(0)
+  page.locator('#storage-form button').click()
+  expect(page.locator('.storage-timing')).to_have_attribute('data-state',state)
+  if state in ['at_limit','past_limit']:
+   expect(page.locator('.storage-timing')).to_contain_text('discard conservatively')
+  if state=='at_limit':page.screenshot(path=str(OUT/'storage-limit-reached.png'),full_page=True)
+ page.locator('#days-stored').fill('');page.locator('#storage-form button').click()
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','age_needed')
+ expect(page.locator('.storage-timing')).not_to_contain_text('You still have')
+ page.locator('#days-stored').fill('1');page.locator('#storage-form button').click()
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','within_window')
+ checks.append('Reference timer shows time left, near-limit, at-limit/past-limit conservative discard; editing clears stale timing and missing age has no countdown')
+
  page.screenshot(path=str(OUT/'report-with-guidance.png'),full_page=True)
  # Correcting a model candidate must invalidate the old advice and freshness assessment.
  page.locator('#produce-corrected').check()
@@ -60,15 +78,17 @@ with sync_playwright() as tool:
  path=OUT/'corrected-report.txt';download.value.save_as(str(path));text=path.read_text()
  assert 'Model produce candidate: Banana' in text and 'User-confirmed produce: Bitter melon' in text
  assert 'Freshness: Unavailable' in text and 'Typical storage guidance: 3–5 days' in text
+ assert 'Storage timing:' in text and 'not guaranteed safe time' in text
  checks.append('Export preserves model versus user identity, suppresses mismatched freshness, and includes source guidance')
  page.locator('#storage-condition').select_option('cut');page.locator('#storage-location').select_option('counter');page.locator('#storage-form button').click()
  expect(page.locator('#storage-result')).to_contain_text('No numerical window')
  expect(page.locator('#storage-result')).to_contain_text('two hours')
  checks.append('Cut produce on counter receives a refrigeration action, not an invented remaining-days range')
  page.locator('#storage-location').select_option('refrigerator');page.locator('#storage-spoilage').select_option('yes');page.locator('#storage-form button').click()
- expect(page.locator('#storage-result')).to_contain_text('spoilage is present, discard')
+ expect(page.locator('#storage-result')).to_contain_text('Discard: reported signs of spoilage')
  expect(page.locator('#storage-result')).to_contain_text('No numerical window')
- checks.append('Observed spoilage blocks numerical storage guidance')
+ expect(page.locator('.storage-timing')).to_have_attribute('data-state','discard')
+ checks.append('Observed spoilage blocks numerical storage guidance and overrides any positive reference time')
  page.locator('#confirmed-produce').select_option('other');page.locator('#storage-form button').click()
  expect(page.locator('#storage-result')).to_contain_text('No item-specific guidance')
  page.locator('#report-screen [data-action="back-home"]').click();page.locator('[data-screen="history"]').click()

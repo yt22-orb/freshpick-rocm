@@ -213,3 +213,8 @@ h1, h2, p { overflow-wrap: anywhere; }
 .photo-details dd { margin: 3px 0 0; font-weight: 600; }
 .photo-details summary { cursor: pointer; color: #175440; font-size: 14px; }
 .photo-details details label { display: block; }
+
+.storage-timing { padding: 16px; border: 1px solid #d6e2da; border-radius: 16px; margin: 0 0 18px; background: #f0f5f1; }
+.storage-timing > strong { display: block; font-size: 19px; line-height: 1.35; }
+.storage-timing.is-near { background: #fff0d6; border-color: #e8c48b; }
+.storage-timing.is-discard { background: #fae6df; border-color: #daaa9a; }

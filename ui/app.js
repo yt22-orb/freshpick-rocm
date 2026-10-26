@@ -361,7 +361,7 @@ function exportReport() {
     `User-confirmed produce: ${lastResult.confirmedProduce ? (produceLabels[lastResult.confirmedProduce] || 'Other / unsure') : 'Not confirmed'}`,
     `Freshness: ${freshnessAvailable ? stageLabels[lastResult.freshness] : 'Unavailable; candidate is not a verified assessment for this produce'}`,
     ...(freshnessAvailable ? [`Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`] : []),
-    ...(lastResult.storageGuidance ? ['Typical storage guidance: ' + lastResult.storageGuidance.window_label, ...lastResult.storageGuidance.suggestions, ...lastResult.storageGuidance.assumptions, lastResult.storageGuidance.disclaimer, ...lastResult.storageGuidance.sources.map((source) => source.title + ': ' + source.url + ' (reviewed ' + source.reviewed_on + ')')] : ['Storage guidance: Not requested']),
+    ...(lastResult.storageGuidance ? ['Typical storage guidance: ' + lastResult.storageGuidance.window_label, ...(lastResult.storageGuidance.timing ? ['Storage timing: ' + lastResult.storageGuidance.timing.heading, lastResult.storageGuidance.timing.body, lastResult.storageGuidance.timing.caveat, 'Calculated snapshot: ' + lastResult.storageGuidance.timing.calculated_at] : []), ...lastResult.storageGuidance.suggestions, ...lastResult.storageGuidance.assumptions, lastResult.storageGuidance.disclaimer, ...lastResult.storageGuidance.sources.map((source) => source.title + ': ' + source.url + ' (reviewed ' + source.reviewed_on + ')')] : ['Storage guidance: Not requested']),
     ...(lastResult.selectedPhotoDetails ? [`Photo/detail source: ${lastResult.photoDetailsEdited ? 'edited by user' : 'model suggestion'}`, `Whole/cut detail: ${lastResult.selectedPhotoDetails.condition}`, `Ripeness appearance: ${lastResult.selectedPhotoDetails.ripeness}`] : []),
     `Model version: ${lastResult.modelVersion}`,
     `Identifier version: ${lastResult.identifierVersion || '24-class baseline'}`,
@@ -474,6 +474,13 @@ function populatePhotoDetails(produce) {
   lastResult.photoDetailsEdited = false;
   updatePhotoSummary();
 }
+function renderStorageTiming(advice) {
+  const timing = advice.timing;
+  if (!timing) return '';
+  const style = timing.action === 'discard' ? 'is-discard' : timing.state === 'near_limit' ? 'is-near' : '';
+  return `<section class="storage-timing ${style}" data-state="${escapeHtml(timing.state)}" aria-label="Storage-window status">${timing.details_are_photo_suggestions ? '<p class="helper">Assuming the photo-suggested details are correct:</p>' : ''}<strong>${escapeHtml(timing.heading)}</strong><p>${escapeHtml(timing.body)}</p><p class="helper">${escapeHtml(timing.caveat)}</p><p class="helper">Snapshot based on your reported storage age. Update days stored when you revisit.</p></section>`;
+}
+
 function updatePhotoSummary() {
   if (!lastResult) return;
   const condition = document.querySelector('#storage-condition').value;
@@ -482,6 +489,8 @@ function updatePhotoSummary() {
   document.querySelector('#photo-condition').textContent = ({whole:'Whole, unpeeled',cut:'Cut or peeled'})[condition] ? ({whole:'Whole, unpeeled',cut:'Cut or peeled'})[condition] + suffix : 'Not clear from this photo';
   document.querySelector('#photo-ripeness').textContent = ({ripe:'Ripe-looking',unripe:'Unripe-looking'})[ripeness] ? ({ripe:'Ripe-looking',unripe:'Unripe-looking'})[ripeness] + suffix : 'Not clear / not assessed for this produce';
   lastResult.selectedPhotoDetails = {condition,ripeness};
+  document.querySelector('#days-stored-label').textContent = condition === 'cut' ? 'Days since cutting / peeling (optional)' : condition === 'whole' ? 'Days since purchase / harvest (optional)' : 'Days already stored (optional)';
+  document.querySelector('#storage-age-basis').textContent = condition === 'cut' ? 'Count all time since cutting or peeling under the reported conditions, including time before refrigeration. Earlier unsafe handling is not cancelled by chilling.' : 'Count elapsed time since purchase or harvest under the reported conditions. Previous unknown handling can shorten the window; fractions of a day are allowed.';
 }
 function invalidateStorage(event) {
   storageController?.abort();
@@ -527,7 +536,7 @@ document.querySelector('#storage-form').addEventListener('submit', async (event)
     const advice = await response.json();
     if (controller.signal.aborted || result !== lastResult) return;
     result.confirmedProduce = produce; result.storageGuidance = advice;
-    target.innerHTML = `<strong>${escapeHtml(advice.window_label)}</strong><ul>${[...advice.suggestions,...advice.assumptions].map((text) => `<li>${escapeHtml(text)}</li>`).join('')}</ul><p class="helper">${escapeHtml(advice.disclaimer)}</p><p>Sources: ${advice.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)}</a> (reviewed ${escapeHtml(source.reviewed_on)})`).join('; ')}</p>`;
+    target.innerHTML = `${renderStorageTiming(advice)}<strong>${escapeHtml(advice.window_label)}</strong><ul>${[...advice.suggestions.filter((text) => text !== advice.timing?.body),...advice.assumptions].map((text) => `<li>${escapeHtml(text)}</li>`).join('')}</ul><p class="helper">${escapeHtml(advice.disclaimer)}</p><p>Sources: ${advice.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)}</a> (reviewed ${escapeHtml(source.reviewed_on)})`).join('; ')}</p>`;
     saveHistory(result); renderReport(result);
   } catch (error) {
     if (error.name !== 'AbortError' && result === lastResult) target.textContent = error.message;
