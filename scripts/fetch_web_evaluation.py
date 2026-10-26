@@ -24,7 +24,7 @@ QUERIES = {
 HEADERS = {'User-Agent':'FreshPickEvaluation/0.2 (local research; provenance recorded)'}
 
 def clean(value):
- return html.unescape(re.sub('<[^>]+>', '', str(value)))
+ return ' '.join(html.unescape(re.sub('<[^>]+>', '', str(value))).split())
 
 def fetch(item):
  produce, query = item

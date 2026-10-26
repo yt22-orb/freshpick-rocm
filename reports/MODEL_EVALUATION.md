@@ -205,27 +205,27 @@ Accuracy: fraction of predictions that match the label; joint accuracy requires 
 
 - [cucumber_more_06: File:Unsliced fresh cucumber.jpg](https://commons.wikimedia.org/wiki/File:Unsliced_fresh_cucumber.jpg) — MaiDenzel; CC BY-SA 4.0.
 
-- [cucumber_direct_5765366: File:Cucumber and cross section.jpg](https://commons.wikimedia.org/wiki/File:Cucumber_and_cross_section.jpg) — 
+- [cucumber_direct_5765366: File:Cucumber and cross section.jpg](https://commons.wikimedia.org/wiki/File:Cucumber_and_cross_section.jpg) —
 
 
 
 
 
-	
-		
+
+
 		fir0002  flagstaffotos [at] gmail.com
 		Canon 20D + Sigma 150mm f/2.8
 
-		
-                    
-                         
-                         
-                         
-                         
-                         
-                         
-		
-	
+
+
+
+
+
+
+
+
+
+
 
 ; GFDL 1.2.
 
