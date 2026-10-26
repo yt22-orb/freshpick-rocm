@@ -105,6 +105,8 @@ h1, h2, p { overflow-wrap: anywhere; }
 .result-fruit.has-photo { overflow: hidden; background: #e8e0d9; }
 .result-fruit.has-photo img { width: 100%; height: 100%; object-fit: cover; transform: none; }
 .freshness-chip { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 24px; background: #dcefe5; color: #145d3d; font-weight: 700; }
+.freshness-chip.semi_fresh, .freshness-chip.uncertain { background: #f8e8cc; color: #7a4a0b; }
+.freshness-chip.rotten { background: #f5dddd; color: #8a2929; }
 .result-hero h2 { margin: 14px 0 4px; font: 800 29px/1.12 'Manrope', sans-serif; letter-spacing: -.7px; }
 .scan-time { margin: 4px 0 20px; color: var(--muted); font-size: 13px; }
 .report-card { margin: 14px 0; padding: 19px 20px; border-radius: 30px; background: var(--panel); }
@@ -114,7 +116,6 @@ h1, h2, p { overflow-wrap: anywhere; }
 .confidence-track, .bar-track { height: 9px; overflow: hidden; border-radius: 20px; background: #e8e0d9; }
 .confidence-track span, .bar-fill { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--orange); transition: width .3s ease; }
 .helper { margin-top: 8px; font-size: 12px; line-height: 1.5; }
-.shelf-card strong { display: block; font-size: 16px; }
 .guidance-card strong, .safety-card strong { font-size: 15px; }
 .guidance-card p, .safety-card p { margin: 8px 0 0; color: #5f5953; font-size: 13px; line-height: 1.55; }
 .safety-card { margin: 16px 0; padding: 20px; border-radius: 28px; background: #fae7d1; }

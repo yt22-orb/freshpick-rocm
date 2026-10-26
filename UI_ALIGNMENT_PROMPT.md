@@ -10,7 +10,7 @@ Build the FreshPick image-classification pipeline and connect it to the FreshPic
 
 ### Model and supported labels
 
-Train and run the model using the prepared AgriFreshNET version 1 data described in this repository. It contains 24 joint classes: eight supported produce types crossed with Fresh, Semi-fresh, and Rotten. The supported produce types are banana, bitter melon, cucumber, eggplant, orange, papaya, pineapple, and tomato. The dataset contains no apple images. Do not return “Red Apple” or any other unsupported produce label. Replace screenshot sample data in the live UI with clearly marked placeholder content until a real inference response is available. This classifier has no “other produce” class, so its softmax scores cannot reliably detect apples or other unsupported items. If the UI needs an unknown-item path, use a validation-supported abstention threshold and describe it only as an uncertainty check, not verified out-of-domain recognition. A user-selected produce type may be used only if the UI clearly asks for it.
+Train and run the model using the prepared AgriFreshNET version 1 data described in this repository. It contains 24 joint classes: eight supported produce types crossed with Fresh, Semi-fresh, and Rotten. The supported produce types are banana, bitter melon, cucumber, eggplant, orange, papaya, pineapple, and tomato. The dataset contains no apple images. Do not return “Red Apple” or any other unsupported produce label. Replace screenshot sample data in the live UI with clearly marked placeholder content until a real inference response is available. Checkpoints trained with unsupported-item outlier exposure may use their held-out calibrated threshold to return `status: "uncertain"`; describe this as rejection rather than apple recognition. A user-selected produce type may be used only if the UI clearly asks for it.
 
 Keep the 24-class model output. For each inference, return:
 
@@ -22,11 +22,16 @@ Keep the 24-class model output. For each inference, return:
   "freshness": "semi_fresh",
   "freshness_label": "Semi-fresh",
   "class_confidence": 0.61,
+  "produce_confidence": 0.68,
   "freshness_confidence": 0.78,
   "freshness_probabilities": {
     "fresh": 0.12,
     "semi_fresh": 0.78,
     "rotten": 0.10
+  },
+  "produce_probabilities": {
+    "banana": 0.68,
+    "...remaining 7 produce probabilities...": "..."
   },
   "class_probabilities": {
     "fresh_banana": 0.04,
@@ -38,7 +43,7 @@ Keep the 24-class model output. For each inference, return:
 }
 ```
 
-The example numbers and labels above are schema examples only; the ellipsis is explanatory and is not a literal JSON key. Return all 24 actual entries in `class_probabilities`. Derive the predicted produce and freshness from the highest-probability joint class. Derive the three `freshness_probabilities` by summing the 24 joint-class probabilities for each freshness stage, then renormalize for rounding. `class_confidence` is the winning joint-class probability; `freshness_confidence` is the summed probability for the predicted freshness stage. Use `freshness_confidence` for the prominent UI percentage and label it “Freshness confidence.” The Inspector’s freshness bars must use these three summed values and display percentages that total 100% (within rounding). Never substitute invented or constant confidence values.
+The example numbers and labels above are schema examples only; the ellipsis is explanatory and is not a literal JSON key. Return all 24 actual entries in `class_probabilities`. Derive predicted produce by summing its three freshness-class probabilities and taking the largest produce marginal. Derive freshness the same way across all eight produce types. `class_confidence` remains the largest joint-class probability; `produce_confidence` and `freshness_confidence` are the winning marginal probabilities. Use `freshness_confidence` for the prominent UI percentage and label it “Freshness confidence.” The Inspector’s freshness bars must use the three marginal values and display percentages that total 100% (within rounding). Never substitute invented or constant confidence values.
 
 ### UI behavior and result wording
 

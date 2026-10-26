@@ -184,22 +184,29 @@ function normalizeResult(payload) {
   const winner = rows.reduce((best, row) => row.value > best.value ? row : best, rows[0]);
   if (!winner?.produce || !winner?.freshness) throw new Error('The model returned an unsupported class label.');
   const freshnessProbabilities = { fresh: 0, semi_fresh: 0, rotten: 0 };
+  const produceProbabilities = Object.fromEntries(Object.keys(produceLabels).map((key) => [key, 0]));
   rows.forEach((row) => {
     if (row.freshness in freshnessProbabilities) freshnessProbabilities[row.freshness] += row.value;
+    if (row.produce in produceProbabilities) produceProbabilities[row.produce] += row.value;
   });
   const total = Object.values(freshnessProbabilities).reduce((sum, value) => sum + value, 0);
   if (!(total > 0)) throw new Error('The model returned no usable freshness probabilities.');
   Object.keys(freshnessProbabilities).forEach((key) => { freshnessProbabilities[key] /= total; });
-  const predictedFreshness = winner.freshness;
-  const predictedProduce = winner.produce;
+  Object.keys(produceProbabilities).forEach((key) => { produceProbabilities[key] /= total; });
+  const predictedFreshness = Object.entries(freshnessProbabilities)
+    .reduce((best, item) => item[1] > best[1] ? item : best)[0];
+  const predictedProduce = Object.entries(produceProbabilities)
+    .reduce((best, item) => item[1] > best[1] ? item : best)[0];
   const freshnessConfidence = freshnessProbabilities[predictedFreshness];
+  const produceConfidence = produceProbabilities[predictedProduce];
   const classConfidence = winner.value;
-  if (![freshnessConfidence, classConfidence].every((value) => Number.isFinite(value) && value >= 0 && value <= 1)) {
+  if (![freshnessConfidence, produceConfidence, classConfidence].every((value) => Number.isFinite(value) && value >= 0 && value <= 1)) {
     throw new Error('The model returned an invalid confidence score.');
   }
   return {
     status: payload.status, produce: predictedProduce, freshness: predictedFreshness,
-    classConfidence, freshnessConfidence, freshnessProbabilities,
+    classConfidence, produceConfidence, freshnessConfidence,
+    produceProbabilities, freshnessProbabilities,
     classProbabilities, modelVersion: payload.model_version || 'Unspecified',
     imageName: activeFile?.name || 'Captured image', imageUrl: activeImageUrl,
   };
@@ -213,14 +220,20 @@ function parseClassName(name) {
 function renderReport(result) {
   const stage = result.status === 'uncertain' ? 'Uncertain' : (stageLabels[result.freshness] || 'Uncertain');
   const produce = produceLabels[result.produce] || titleCase(result.produce);
-  const confidence = clamp(result.freshnessConfidence);
+  const uncertain = result.status === 'uncertain';
+  const confidence = clamp(uncertain ? result.produceConfidence : result.freshnessConfidence);
   const reportFruit = document.querySelector('#report-fruit');
   reportFruit.src = result.imageUrl || 'assets/fruit.svg';
   reportFruit.alt = result.imageUrl ? 'Scanned produce' : '';
   reportFruit.closest('.result-fruit').classList.toggle('has-photo', Boolean(result.imageUrl));
-  document.querySelector('#report-status span:last-child').textContent = stage;
-  document.querySelector('#report-produce').textContent = result.status === 'uncertain' ? 'Could not classify clearly' : produce;
+  const reportStatus = document.querySelector('#report-status');
+  reportStatus.classList.remove('fresh', 'semi_fresh', 'rotten', 'uncertain');
+  reportStatus.classList.add(uncertain ? 'uncertain' : result.freshness);
+  reportStatus.querySelector('span:first-child').textContent = uncertain ? '?' : '✓';
+  reportStatus.querySelector('span:last-child').textContent = stage;
+  document.querySelector('#report-produce').textContent = uncertain ? 'Could not classify clearly' : produce;
   document.querySelector('#report-time').textContent = `Scanned ${new Date(result.capturedAt).toLocaleString()}`;
+  document.querySelector('#confidence-label').textContent = uncertain ? 'Top produce score' : 'Freshness confidence';
   document.querySelector('#report-confidence').textContent = `${(confidence * 100).toFixed(1)}%`;
   document.querySelector('#confidence-fill').style.width = `${confidence * 100}%`;
   document.querySelector('#guidance-copy').textContent = guidance(result.status === 'uncertain' ? 'uncertain' : result.freshness);
@@ -251,7 +264,7 @@ function renderInspector(tab) {
   }
   if (tab === 'model') {
     const label = lastResult.status === 'uncertain' ? 'Top candidate' : 'Predicted produce';
-    content.innerHTML = `<div class="detail-row"><div><strong>Model version</strong><span>Reported by inference service</span></div><span>${escapeHtml(lastResult.modelVersion)}</span></div><div class="detail-row"><div><strong>${label}</strong><span>Joint class result</span></div><span>${escapeHtml(produceLabels[lastResult.produce] || titleCase(lastResult.produce))}</span></div><div class="unavailable"><strong>Scope</strong>Eight produce types and three inherited freshness labels. No shelf-life estimate is available.</div>`;
+    content.innerHTML = `<div class="detail-row"><div><strong>Model version</strong><span>Reported by inference service</span></div><span>${escapeHtml(lastResult.modelVersion)}</span></div><div class="detail-row"><div><strong>${label}</strong><span>Marginal produce result · ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%</span></div><span>${escapeHtml(produceLabels[lastResult.produce] || titleCase(lastResult.produce))}</span></div><div class="unavailable"><strong>Scope</strong>Eight produce types and three inherited freshness labels. Unsupported items are rejected only by checkpoints calibrated with out-of-distribution images.</div>`;
     return;
   }
   const imageName = escapeHtml(lastResult.imageName || 'Analyzed image');
@@ -268,7 +281,8 @@ function renderInspector(tab) {
 function saveHistory(result) {
   const history = readHistory();
   history.unshift({ status: result.status, produce: result.produce, freshness: result.freshness,
-    confidence: result.freshnessConfidence, capturedAt: result.capturedAt });
+    confidence: result.status === 'uncertain' ? result.produceConfidence : result.freshnessConfidence,
+    capturedAt: result.capturedAt });
   localStorage.setItem('freshpick-history', JSON.stringify(history.slice(0, 12)));
 }
 
@@ -282,7 +296,7 @@ function renderHistory() {
   const target = document.querySelector('#history-list');
   const recent = document.querySelector('.home-history');
   recent.innerHTML = history.length
-    ? `<div class="empty-mark" aria-hidden="true">✓</div><div><strong>${escapeHtml(produceLabels[history[0].produce] || titleCase(history[0].produce))}</strong><span>${history[0].status === 'uncertain' ? 'Uncertain' : (stageLabels[history[0].freshness] || 'Uncertain')} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
+    ? `<div class="empty-mark" aria-hidden="true">${history[0].status === 'uncertain' ? '?' : '✓'}</div><div><strong>${history[0].status === 'uncertain' ? 'Uncertain result' : escapeHtml(produceLabels[history[0].produce] || titleCase(history[0].produce))}</strong><span>${history[0].status === 'uncertain' ? 'Top produce score' : (stageLabels[history[0].freshness] || 'Uncertain')} · ${(clamp(history[0].confidence) * 100).toFixed(1)}%</span></div><span class="small-arrow" aria-hidden="true">›</span>`
     : '<div class="empty-mark" aria-hidden="true">+</div><div><strong>No scans yet</strong><span>Your latest result will appear here.</span></div>';
   if (!history.length) {
     target.innerHTML = '<div class="history-empty"><strong>No scans yet</strong>Your scan history will appear here on this device.</div>';
@@ -293,14 +307,22 @@ function renderHistory() {
 
 function exportReport() {
   if (!lastResult) return showToast('There is no report to export yet.');
-  const text = [
+  const uncertain = lastResult.status === 'uncertain';
+  const text = (uncertain ? [
+    'FreshPick visible-condition report',
+    'Status: Uncertain',
+    `Top produce candidate: ${produceLabels[lastResult.produce] || titleCase(lastResult.produce)}`,
+    `Top produce score: ${(clamp(lastResult.produceConfidence) * 100).toFixed(1)}%`,
+    'Try another clear photo of one supported item.',
+  ] : [
     'FreshPick visible-condition report',
     `Produce: ${produceLabels[lastResult.produce] || titleCase(lastResult.produce)}`,
     `Freshness: ${stageLabels[lastResult.freshness] || lastResult.freshness}`,
     `Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`,
+  ]).concat([
     `Scanned: ${new Date(lastResult.capturedAt).toLocaleString()}`,
-    'This image assessment cannot confirm internal quality, contamination, food safety, or shelf life.',
-  ].join('\n');
+    'This image assessment cannot confirm internal quality, contamination, or food safety.',
+  ]).join('\n');
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
   const link = document.createElement('a');
   link.href = url;

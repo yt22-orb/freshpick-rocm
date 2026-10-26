@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 source/
 prepared_dataset/
+ood_dataset/
 runs/
 *.pt
 *.pth
