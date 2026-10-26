@@ -70,6 +70,8 @@ class Identifier:
         self.positive=self.saved['positive_prototypes'].to('cuda')
         self.temperature=float(self.saved.get('temperature',1))
         self.threshold=float(self.saved['margin_threshold'])
+        from .photo_observations import PhotoObserver
+        self.photo_observer = PhotoObserver(self.model)
         self.version='clip-vit-b32-'+hashlib.sha256(Path(checkpoint).read_bytes()).hexdigest()[:16]
 
     def predict(self,image):
@@ -81,7 +83,8 @@ class Identifier:
             margin=float((feature@self.positive.T).max()-(feature@self.negative.T).max())
         index=max(range(8),key=probs.__getitem__)
         accepted=margin>=self.threshold
-        return {'produce':PRODUCE[index],'produce_confidence':probs[index],
+        observations=self.photo_observer.observe(feature) if accepted else None
+        return {'photo_observations':observations,'produce':PRODUCE[index],'produce_confidence':probs[index],
                 'produce_probabilities':dict(zip(PRODUCE,probs)), 'identifier_version':self.version,
                 'status':'ok' if accepted else 'uncertain','identity_margin':margin,
                 'uncertainty_reason':None if accepted else 'The image did not pass the pilot-calibrated supported-produce check. Try one clear supported item.',

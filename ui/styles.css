@@ -204,3 +204,12 @@ h1, h2, p { overflow-wrap: anywhere; }
 #storage-result li { margin: 8px 0; }
 #storage-result a { color: #175440; }
 .produce-confidence-card .confidence-value { display: block; }
+
+.identity-confirmation { padding: 12px; border: 1px solid var(--line); border-radius: 14px; }
+.identity-confirmation legend { padding: 0 5px; font-weight: 700; }
+.photo-details { padding: 14px; border-radius: 14px; background: #fffaf5; }
+.photo-details dl { margin: 12px 0; font-size: 14px; }
+.photo-details dt { color: var(--muted); margin-top: 10px; }
+.photo-details dd { margin: 3px 0 0; font-weight: 600; }
+.photo-details summary { cursor: pointer; color: #175440; font-size: 14px; }
+.photo-details details label { display: block; }

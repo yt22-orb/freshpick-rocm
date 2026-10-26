@@ -1,0 +1,19 @@
+{
+  "prompt_sha256": "3a431219e6d122391a601b95a1d16c8f20d112f5469efef2a7fb95b99d8c5734",
+  "scope": "Small source-grouped photo appearance pilot; suggestions, not verified maturity or freshness.",
+  "label_sha256": "150d4aa9911c04f690e6c870fe4bf3e7333b4403908496460c1f731450f67c42",
+  "condition": {
+    "threshold": 0.6780243813991547,
+    "validation_n": 20,
+    "validation_suggestions": 18,
+    "validation_accuracy_if_suggested": 0.9444444444444444,
+    "criterion": "At least 5 validation suggestions with >=90% empirical visual-label precision; maximize coverage. No reliable-population precision guarantee."
+  },
+  "ripeness": {
+    "threshold": 0.0,
+    "validation_n": 7,
+    "validation_suggestions": 5,
+    "validation_accuracy_if_suggested": 1.0,
+    "criterion": "At least 5 validation suggestions with >=90% empirical visual-label precision; maximize coverage. No reliable-population precision guarantee."
+  }
+}

@@ -84,3 +84,15 @@ and storage inputs remain separate in history and exports.
 explicit user answers. Numeric ranges are typical household reference windows,
 never predictions of the scanned item's remaining shelf life. Missing confirmation,
 uncertain spoilage, and unsupported conditions must not produce invented ranges.
+
+
+## Photo-based form suggestions
+
+`photo_observations.by_produce` holds explicit whole/cut and ripe-looking appearance
+proposals, their raw model scores and a method/version/scope. These are not
+freshness labels or verified maturity. The usual form asks Yes/No for the produce,
+then storage location, odor/leakage/softening and elapsed days. Model proposals
+pre-fill an optional details editor. Unknown condition stays unknown and blocks
+numeric guidance. Corrected produce selects its own photo proposals. Do not copy
+a previous produce's ripeness or convert Fresh into ripe. Storage requests include
+`observation_source` to distinguish model suggestions from user edits.

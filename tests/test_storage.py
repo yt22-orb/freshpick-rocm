@@ -37,3 +37,16 @@ def test_api_rejects_unsupported_items_and_negative_age():
     assert client.post('/storage-guidance',json=payload|{'produce':'banana','days_stored':-1}).status_code==422
     result=client.post('/storage-guidance',json=payload|{'produce':'banana'})
     assert result.status_code==200 and result.json()['typical_window_days']=={'min':3,'max':3}
+
+
+
+def test_unclear_photo_condition_never_defaults_to_whole():
+    advice=storage_guidance(StorageRequest(produce='banana',confirmed=True,condition='unknown',ripeness='ripe',location='refrigerator',spoilage='no',observation_source='photo_model'))
+    assert advice['typical_window_days'] is None
+    assert advice['status']=='needs_details'
+
+
+def test_photo_suggestions_are_not_recorded_as_user_observations():
+    advice=storage_guidance(StorageRequest(produce='banana',confirmed=True,condition='whole',ripeness='ripe',location='refrigerator',spoilage='no',observation_source='photo_model'))
+    assert advice['inputs']['observation_source']=='photo_model'
+    assert any('conditional' in text and 'suggestions' in text for text in advice['assumptions'])

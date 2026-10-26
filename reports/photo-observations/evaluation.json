@@ -1,0 +1,433 @@
+{
+  "calibration": {
+    "prompt_sha256": "3a431219e6d122391a601b95a1d16c8f20d112f5469efef2a7fb95b99d8c5734",
+    "scope": "Small source-grouped photo appearance pilot; suggestions, not verified maturity or freshness.",
+    "label_sha256": "150d4aa9911c04f690e6c870fe4bf3e7333b4403908496460c1f731450f67c42",
+    "condition": {
+      "threshold": 0.6780243813991547,
+      "validation_n": 20,
+      "validation_suggestions": 18,
+      "validation_accuracy_if_suggested": 0.9444444444444444,
+      "criterion": "At least 5 validation suggestions with >=90% empirical visual-label precision; maximize coverage. No reliable-population precision guarantee."
+    },
+    "ripeness": {
+      "threshold": 0.0,
+      "validation_n": 7,
+      "validation_suggestions": 5,
+      "validation_accuracy_if_suggested": 1.0,
+      "criterion": "At least 5 validation suggestions with >=90% empirical visual-label precision; maximize coverage. No reliable-population precision guarantee."
+    }
+  },
+  "test": {
+    "condition": {
+      "n": 20,
+      "suggestions": 16,
+      "coverage": 0.8,
+      "accuracy_if_suggested": 0.9375,
+      "errors": [
+        "bittermelon_18944917"
+      ]
+    },
+    "ripeness": {
+      "n": 8,
+      "suggestions": 6,
+      "coverage": 0.75,
+      "accuracy_if_suggested": 0.6666666666666666,
+      "errors": [
+        "papaya_83528632",
+        "tomato_57007180"
+      ]
+    }
+  },
+  "records": {
+    "condition": [
+      {
+        "id": "banana_158273990",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9959968328475952
+      },
+      {
+        "id": "banana_155277115",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9195175766944885
+      },
+      {
+        "id": "banana_10428533",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9664834141731262
+      },
+      {
+        "id": "banana_105143521",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9185312390327454
+      },
+      {
+        "id": "banana_40700294",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.7671737670898438
+      },
+      {
+        "id": "bittermelon_18944917",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "cut",
+        "confidence": 0.8800021409988403
+      },
+      {
+        "id": "bittermelon_5752291",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8389953970909119
+      },
+      {
+        "id": "bittermelon_57172358",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9767102599143982
+      },
+      {
+        "id": "bittermelon_87616305",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.6946867108345032
+      },
+      {
+        "id": "bittermelon_58506842",
+        "split": "val",
+        "actual": "cut",
+        "predicted": "whole",
+        "confidence": 0.5199036002159119
+      },
+      {
+        "id": "bittermelon_17835656",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "cut",
+        "confidence": 0.5180070996284485
+      },
+      {
+        "id": "cucumber_46421038",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8538722991943359
+      },
+      {
+        "id": "cucumber_136749",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.7133774161338806
+      },
+      {
+        "id": "cucumber_26755539",
+        "split": "val",
+        "actual": "cut",
+        "predicted": "whole",
+        "confidence": 0.6657905578613281
+      },
+      {
+        "id": "cucumber_62163191",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "cut",
+        "confidence": 0.5027360916137695
+      },
+      {
+        "id": "eggplant_130444553",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "cut",
+        "confidence": 0.6902582049369812
+      },
+      {
+        "id": "eggplant_50862324",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9498251676559448
+      },
+      {
+        "id": "eggplant_32454674",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8622261881828308
+      },
+      {
+        "id": "eggplant_15538",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9810276031494141
+      },
+      {
+        "id": "eggplant_86445479",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9891561269760132
+      },
+      {
+        "id": "eggplant_19045976",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.998202919960022
+      },
+      {
+        "id": "orange_141783830",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "cut",
+        "confidence": 0.5394241809844971
+      },
+      {
+        "id": "orange_57023272",
+        "split": "test",
+        "actual": "cut",
+        "predicted": "cut",
+        "confidence": 0.9964648485183716
+      },
+      {
+        "id": "orange_64061227",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9990560412406921
+      },
+      {
+        "id": "orange_164959",
+        "split": "val",
+        "actual": "cut",
+        "predicted": "cut",
+        "confidence": 0.7766153216362
+      },
+      {
+        "id": "papaya_125752280",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9809311032295227
+      },
+      {
+        "id": "papaya_114131683",
+        "split": "test",
+        "actual": "cut",
+        "predicted": "cut",
+        "confidence": 0.8112767934799194
+      },
+      {
+        "id": "papaya_83528632",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9992389678955078
+      },
+      {
+        "id": "papaya_150434941",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9953222870826721
+      },
+      {
+        "id": "papaya_140172657",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.7756596207618713
+      },
+      {
+        "id": "pineapple_30028144",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.6978365778923035
+      },
+      {
+        "id": "pineapple_87431522",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8925001621246338
+      },
+      {
+        "id": "pineapple_197150780",
+        "split": "val",
+        "actual": "cut",
+        "predicted": "cut",
+        "confidence": 0.7645807266235352
+      },
+      {
+        "id": "pineapple_9666872",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8164027333259583
+      },
+      {
+        "id": "pineapple_11428648",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9625807404518127
+      },
+      {
+        "id": "tomato_57007180",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8941789865493774
+      },
+      {
+        "id": "tomato_27942302",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.9706526398658752
+      },
+      {
+        "id": "tomato_57001507",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.8361501693725586
+      },
+      {
+        "id": "tomato_115805187",
+        "split": "test",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.5375634431838989
+      },
+      {
+        "id": "tomato_63753287",
+        "split": "val",
+        "actual": "whole",
+        "predicted": "whole",
+        "confidence": 0.763107419013977
+      }
+    ],
+    "ripeness": [
+      {
+        "id": "banana_158273990",
+        "split": "val",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.9430880546569824
+      },
+      {
+        "id": "banana_155277115",
+        "split": "test",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.8888193964958191
+      },
+      {
+        "id": "banana_10428533",
+        "split": "test",
+        "actual": "ripe",
+        "predicted": "unknown",
+        "confidence": 0.6101903915405273
+      },
+      {
+        "id": "banana_105143521",
+        "split": "val",
+        "actual": "unripe",
+        "predicted": "unknown",
+        "confidence": 0.911895215511322
+      },
+      {
+        "id": "banana_40700294",
+        "split": "val",
+        "actual": "unknown",
+        "predicted": "unknown",
+        "confidence": 0.9242323040962219
+      },
+      {
+        "id": "papaya_125752280",
+        "split": "test",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.8496561646461487
+      },
+      {
+        "id": "papaya_114131683",
+        "split": "test",
+        "actual": "unknown",
+        "predicted": "unknown",
+        "confidence": 0.8183297514915466
+      },
+      {
+        "id": "papaya_83528632",
+        "split": "test",
+        "actual": "unknown",
+        "predicted": "unripe",
+        "confidence": 0.5665934681892395
+      },
+      {
+        "id": "papaya_150434941",
+        "split": "val",
+        "actual": "unripe",
+        "predicted": "unripe",
+        "confidence": 0.9900591969490051
+      },
+      {
+        "id": "papaya_140172657",
+        "split": "val",
+        "actual": "unripe",
+        "predicted": "unripe",
+        "confidence": 0.9287636280059814
+      },
+      {
+        "id": "tomato_57007180",
+        "split": "test",
+        "actual": "unknown",
+        "predicted": "ripe",
+        "confidence": 0.9809984564781189
+      },
+      {
+        "id": "tomato_27942302",
+        "split": "val",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.5344619750976562
+      },
+      {
+        "id": "tomato_57001507",
+        "split": "test",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.7797858715057373
+      },
+      {
+        "id": "tomato_115805187",
+        "split": "test",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.5291413068771362
+      },
+      {
+        "id": "tomato_63753287",
+        "split": "val",
+        "actual": "ripe",
+        "predicted": "ripe",
+        "confidence": 0.9589576721191406
+      }
+    ]
+  }
+}

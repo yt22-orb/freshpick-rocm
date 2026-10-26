@@ -206,3 +206,18 @@ Browser verification requires `pip install -e '.[browser]'` and
 `python -m playwright install chromium`, then run
 `python scripts/verify_product_flows.py` with the server running. Physical-camera
 hardware and a future independent phone benchmark remain unverified.
+
+
+## Photo-assisted storage form
+
+The form now asks “Is this [produce]?” instead of requesting the identification
+again. No reveals the correction selector. Whole/cut/peeled and ripe-looking
+appearance are suggested from the photo, with an optional details editor.
+Only storage location, unusual odor/leakage/major softening and days stored remain
+as regular questions. Unknown observations stay unknown and may prevent a numeric
+range. Source guidance is conditional on any model-suggested details being correct.
+See [photo-observation results and limitations](reports/PHOTO_OBSERVATIONS.md).
+
+Freshness confidence remains unavailable when the identity and freshness models
+disagree; the card now explains which produce each model identified. Confirming
+an identity or seeing a ripe-looking suggestion does not validate freshness.

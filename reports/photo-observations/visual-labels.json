@@ -1,0 +1,562 @@
+[
+  {
+    "id": "banana_13562039",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_158273990",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_189867100",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "unripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_155277115",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_10428533",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_105143521",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "unripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_142420981",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_117674320",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "unripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_40700294",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "banana_86185231",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_18944917",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_5752291",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_57172358",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_91509135",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_87616305",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_58506842",
+    "split": "val",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_63640233",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_16195164",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_17835656",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_64148872",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_42170619",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "bittermelon_18027163",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_46421038",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_136749",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_26755539",
+    "split": "val",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_62163191",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_136208145",
+    "split": "train",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_72875560",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_154104159",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "cucumber_18129774",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_130444553",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_32168242",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_72463229",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_63680959",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_50862324",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_63679488",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_63536239",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_32454674",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_100794235",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_15538",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_86445479",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "eggplant_19045976",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_18046857",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_109903508",
+    "split": "train",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_141783830",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_30682443",
+    "split": "train",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_163915111",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_57023272",
+    "split": "test",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_64061227",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "orange_164959",
+    "split": "val",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_161623975",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_125752280",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_167234399",
+    "split": "train",
+    "condition": "cut",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_167388919",
+    "split": "train",
+    "condition": "cut",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_162953501",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_114131683",
+    "split": "test",
+    "condition": "cut",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_83528632",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_150434941",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "unripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_140172657",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "unripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "papaya_147341090",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_11753559",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_103363162",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_30028144",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_29388890",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_30298502",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_87431522",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_197150780",
+    "split": "val",
+    "condition": "cut",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_9666872",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_149018390",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "pineapple_11428648",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": null,
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_120024611",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_57007180",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "unknown",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_71303763",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_52988395",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_27942302",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_57001507",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_115805187",
+    "split": "test",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_104985353",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_144792122",
+    "split": "train",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  },
+  {
+    "id": "tomato_63753287",
+    "split": "val",
+    "condition": "whole",
+    "ripe_appearance": "ripe",
+    "review": "Single-reviewer visual appearance, no maturity/freshness/safety ground truth."
+  }
+]

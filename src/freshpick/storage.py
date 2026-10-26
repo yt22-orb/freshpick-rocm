@@ -27,10 +27,11 @@ WHOLE_REFRIGERATED = {
 class StorageRequest(BaseModel):
     produce: Literal['banana','bittermelon','cucumber','eggplant','orange','papaya','pineapple','tomato']
     confirmed: bool
-    condition: Literal['whole','cut']
+    condition: Literal['whole','cut','unknown']
     ripeness: Literal['unripe','ripe','unknown']
     location: Literal['counter','refrigerator']
     spoilage: Literal['no','yes','unknown']
+    observation_source: Literal['user','photo_model','user_edited_photo'] = 'user'
     days_stored: float | None = Field(default=None, ge=0, le=365)
 
 
@@ -49,6 +50,8 @@ def storage_guidance(request: StorageRequest):
         result['status']='inspect_first'
         result['suggestions']=['Check for mold, unusual odor, leakage, or major softening. If spoilage is present, discard the item; do not use a storage range to justify keeping it.']
         source('maryland')
+    elif request.condition == 'unknown':
+        result['suggestions']=['The photo does not clearly show whether this item is whole or cut/peeled. Use the optional details editor if you know; no numerical window is given for an unclear condition.']
     elif request.condition == 'cut':
         source('maine'); source('psu')
         if request.location == 'counter':
@@ -84,6 +87,8 @@ def storage_guidance(request: StorageRequest):
         result['window_label']=f'{low} days in the refrigerator' if low==high else f'{low}–{high} days in the refrigerator'
         result['assumptions']=['Whole produce initially in good condition.', 'Household refrigerator around 1–4°C / 33–40°F; check condition regularly.', 'Unknown purchase age, cultivar and prior handling can shorten this typical window.']
         result['suggestions']=[action]
+    if request.observation_source == 'photo_model':
+        result['assumptions'].insert(0, 'Photo-based details are suggestions, not confirmed maturity or condition. Any general storage window is conditional on those suggestions being correct; edit them if needed.')
     if request.days_stored is not None:
         result['suggestions'].append(f'You report {request.days_stored:g} days already stored. This range does not restart today and is not a remaining-days calculation.')
     if request.days_stored is not None and result['typical_window_days'] and request.days_stored >= result['typical_window_days']['max']:

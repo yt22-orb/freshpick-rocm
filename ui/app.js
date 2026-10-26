@@ -147,6 +147,11 @@ async function submitImage(file) {
     document.querySelector('#storage-form').reset();
     document.querySelector('#storage-result').innerHTML = '<p>Complete the details above to see sourced storage guidance.</p>';
     lastResult = { ...normalized, capturedAt: new Date().toISOString() };
+    document.querySelector('#produce-correction').hidden = true;
+    document.querySelector('#confirmed-produce').disabled = true;
+    document.querySelector('#confirmed-produce').required = false;
+    document.querySelector('#photo-details-editor').open = false;
+    populatePhotoDetails(lastResult.produce);
     saveHistory(lastResult);
     renderReport(lastResult);
     requestController = null;
@@ -218,6 +223,8 @@ function normalizeResult(payload) {
     classConfidence, produceConfidence, freshnessConfidence,
     produceProbabilities, freshnessProbabilities,
     freshnessAvailable: payload.freshness_available !== false,
+    freshnessModelProduce: payload.freshness_model_produce || null,
+    photoObservations: payload.photo_observations || null,
     identifierVersion: payload.identifier_version || null,
     uncertaintyReason: payload.uncertainty_reason || null,
     classProbabilities, modelVersion: payload.model_version || 'Unspecified',
@@ -254,7 +261,16 @@ function renderReport(result) {
   document.querySelector('#confidence-label').textContent = 'Freshness confidence';
   document.querySelector('#report-confidence').textContent = freshnessAvailable ? `${(confidence * 100).toFixed(1)}%` : 'Unavailable';
   document.querySelector('#confidence-fill').style.width = `${freshnessAvailable ? confidence * 100 : 0}%`;
-  document.querySelector('#guidance-copy').textContent = freshnessAvailable ? guidance(result.freshness) : 'A verified freshness assessment is unavailable. Confirm the produce and enter its observed condition for independent storage guidance; changing the produce does not relabel the model’s freshness prediction.';
+  const legacyProduce = produceLabels[result.freshnessModelProduce] || result.freshnessModelProduce;
+  document.querySelector('#freshness-reason').textContent = freshnessAvailable
+    ? 'Uncalibrated freshness score, not a food-safety probability.'
+    : corrected ? 'The identification was corrected. The old freshness score does not apply to the corrected item.'
+    : result.status === 'uncertain' ? 'The produce identification is uncertain. A reliable freshness assessment is unavailable.'
+    : legacyProduce && result.freshnessModelProduce !== result.produce ? `The identifier sees ${produce}, but the freshness model sees ${legacyProduce}. Its freshness score cannot be applied reliably to ${produce}. Photo-based storage suggestions are separate.`
+    : 'The freshness model could not provide a reliable assessment. Photo-based storage suggestions are separate.';
+  document.querySelector('#identity-question').textContent = `Is this ${produce}?`;
+  document.querySelector('#identity-yes-label').textContent = `Yes, this is ${produce}`;
+  document.querySelector('#guidance-copy').textContent = freshnessAvailable ? guidance(result.freshness) : 'A verified freshness assessment is unavailable. Confirm the identification to use the separate photo-based storage suggestions. Ripe-looking appearance does not establish freshness or safety.';
 }
 
 function guidance(stage) {
@@ -302,6 +318,7 @@ function saveHistory(result) {
   if (existing >= 0) history.splice(existing, 1);
   history.unshift({ status: result.status, produce: result.produce, freshness: result.freshness,
     confidence: result.produceConfidence, produceConfidence: result.produceConfidence, freshnessConfidence: result.freshnessConfidence, freshnessAvailable: result.freshnessAvailable,
+    photoObservations: result.photoObservations || null, selectedPhotoDetails: result.selectedPhotoDetails || null, photoDetailSource: result.photoDetailsEdited ? 'user_edited_photo' : 'photo_model',
     capturedAt: result.capturedAt, confirmedProduce: result.confirmedProduce || null, storageGuidance: result.storageGuidance || null });
   localStorage.setItem('freshpick-history', JSON.stringify(history.slice(0, 12)));
 }
@@ -345,6 +362,7 @@ function exportReport() {
     `Freshness: ${freshnessAvailable ? stageLabels[lastResult.freshness] : 'Unavailable; candidate is not a verified assessment for this produce'}`,
     ...(freshnessAvailable ? [`Freshness confidence: ${(clamp(lastResult.freshnessConfidence) * 100).toFixed(1)}%`] : []),
     ...(lastResult.storageGuidance ? ['Typical storage guidance: ' + lastResult.storageGuidance.window_label, ...lastResult.storageGuidance.suggestions, ...lastResult.storageGuidance.assumptions, lastResult.storageGuidance.disclaimer, ...lastResult.storageGuidance.sources.map((source) => source.title + ': ' + source.url + ' (reviewed ' + source.reviewed_on + ')')] : ['Storage guidance: Not requested']),
+    ...(lastResult.selectedPhotoDetails ? [`Photo/detail source: ${lastResult.photoDetailsEdited ? 'edited by user' : 'model suggestion'}`, `Whole/cut detail: ${lastResult.selectedPhotoDetails.condition}`, `Ripeness appearance: ${lastResult.selectedPhotoDetails.ripeness}`] : []),
     `Model version: ${lastResult.modelVersion}`,
     `Identifier version: ${lastResult.identifierVersion || '24-class baseline'}`,
     `Scanned: ${new Date(lastResult.capturedAt).toLocaleString()}`,
@@ -442,14 +460,46 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) stopC
 renderHistory();
 
 let storageController = null;
-function invalidateStorage() {
+function chosenProduce() {
+  return document.querySelector('#produce-confirmed').checked ? lastResult?.produce : document.querySelector('#confirmed-produce').value;
+}
+function populatePhotoDetails(produce) {
+  if (!lastResult) return;
+  const proposals = lastResult.photoObservations?.by_produce?.[produce];
+  const condition = proposals?.condition?.value;
+  const ripeness = proposals?.ripeness?.value;
+  document.querySelector('#storage-condition').value = ['whole','cut'].includes(condition) ? condition : 'unknown';
+  document.querySelector('#storage-ripeness').value = ['ripe','unripe'].includes(ripeness) ? ripeness : 'unknown';
+  lastResult.detailsProduce = produce;
+  lastResult.photoDetailsEdited = false;
+  updatePhotoSummary();
+}
+function updatePhotoSummary() {
+  if (!lastResult) return;
+  const condition = document.querySelector('#storage-condition').value;
+  const ripeness = document.querySelector('#storage-ripeness').value;
+  const suffix = lastResult.photoDetailsEdited ? ' · edited by you' : ' · suggested from photo';
+  document.querySelector('#photo-condition').textContent = ({whole:'Whole, unpeeled',cut:'Cut or peeled'})[condition] ? ({whole:'Whole, unpeeled',cut:'Cut or peeled'})[condition] + suffix : 'Not clear from this photo';
+  document.querySelector('#photo-ripeness').textContent = ({ripe:'Ripe-looking',unripe:'Unripe-looking'})[ripeness] ? ({ripe:'Ripe-looking',unripe:'Unripe-looking'})[ripeness] + suffix : 'Not clear / not assessed for this produce';
+  lastResult.selectedPhotoDetails = {condition,ripeness};
+}
+function invalidateStorage(event) {
   storageController?.abort();
   storageController = null;
   if (!lastResult) return;
+  const no = document.querySelector('#produce-corrected').checked;
+  const correction = document.querySelector('#confirmed-produce');
+  if (event?.target?.id === 'produce-corrected') correction.value = '';
+  document.querySelector('#produce-correction').hidden = !no;
+  correction.disabled = !no;
+  correction.required = no;
+  const produce = chosenProduce();
+  if (produce && produce !== lastResult.detailsProduce) populatePhotoDetails(produce);
+  if (['storage-condition','storage-ripeness'].includes(event?.target?.id)) lastResult.photoDetailsEdited = true;
+  updatePhotoSummary();
   lastResult.storageGuidance = null;
-  const confirmed = document.querySelector('#produce-confirmed').checked;
-  lastResult.confirmedProduce = confirmed ? document.querySelector('#confirmed-produce').value || null : null;
-  document.querySelector('#storage-result').textContent = document.querySelector('#confirmed-produce').value === 'other' ? 'No item-specific guidance is available for other or unidentified items.' : 'Details changed. Submit again for matching storage guidance.';
+  lastResult.confirmedProduce = document.querySelector('#produce-confirmed').checked || (no && produce) ? produce || null : null;
+  document.querySelector('#storage-result').textContent = produce === 'other' ? 'No item-specific guidance is available for other or unidentified items.' : 'Details changed. Submit again for matching storage guidance.';
   renderReport(lastResult);
   saveHistory(lastResult);
 }
@@ -459,11 +509,12 @@ document.querySelector('#storage-form').addEventListener('submit', async (event)
   if (!lastResult) return;
   const result = lastResult;
   const target = document.querySelector('#storage-result');
-  const produce = document.querySelector('#confirmed-produce').value;
+  const produce = chosenProduce();
   if (!produceLabels[produce]) { target.textContent = 'No item-specific guidance is available for other or unidentified items.'; return; }
-  const data = {produce, confirmed: document.querySelector('#produce-confirmed').checked,
+  const data = {produce, confirmed: Boolean(result.confirmedProduce),
     condition: document.querySelector('#storage-condition').value,
     ripeness: document.querySelector('#storage-ripeness').value,
+    observation_source: result.photoDetailsEdited ? 'user_edited_photo' : 'photo_model',
     location: document.querySelector('#storage-location').value,
     spoilage: document.querySelector('#storage-spoilage').value,
     days_stored: document.querySelector('#days-stored').value === '' ? null : Number(document.querySelector('#days-stored').value)};

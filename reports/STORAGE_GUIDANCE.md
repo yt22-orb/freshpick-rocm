@@ -39,3 +39,15 @@ image bytes. Clearing site data removes those records.
 
 This is household storage information, not a food-safety determination. Shelf-life
 prediction for an individual item remains outside the trained model's targets.
+
+
+## Streamlined photo-assisted form
+
+The UI now asks “Is this [model candidate]?” with Yes / No. No reveals a correction
+selector. Condition and ripeness appearance are pre-filled from explicit photo
+observation outputs and displayed as suggestions, with an optional editor.
+They are never inferred by relabeling a Fresh classification as ripe.
+The remaining regular inputs are storage location, odor/leakage/softening and
+optional days stored. observation_source records whether details came from the
+photo model or a user edit. Unknown condition blocks a numerical window.
+[Photo observations](PHOTO_OBSERVATIONS.md) documents the pilot accuracy and limits.
